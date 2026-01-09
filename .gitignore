@@ -4,3 +4,4 @@ apm_modules/
 **/AGENTS.md
 AGENTS.md
 .apm
+node_modules

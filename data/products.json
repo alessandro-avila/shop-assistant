@@ -1,0 +1,431 @@
+[
+  {
+    "id": "prod_001",
+    "slug": "premium-wireless-headphones",
+    "name": "Premium Wireless Headphones",
+    "brand": "AudioTech",
+    "category": "electronics",
+    "subcategory": "Audio",
+    "price": 299.99,
+    "originalPrice": 399.99,
+    "discount": 25,
+    "currency": "USD",
+    "rating": 4.8,
+    "reviewCount": 1247,
+    "images": [
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+    "description": "Experience premium sound quality with our flagship wireless headphones. Featuring advanced noise cancellation, 30-hour battery life, and exceptional comfort for all-day wear.",
+    "shortDescription": "Premium wireless headphones with active noise cancellation and 30-hour battery life.",
+    "specifications": {
+      "Driver Size": "40mm",
+      "Frequency Response": "20Hz - 20kHz",
+      "Impedance": "32 Ohms",
+      "Battery Life": "30 hours",
+      "Charging Time": "2 hours",
+      "Weight": "250g"
+    },
+    "features": [
+      "Active Noise Cancellation",
+      "30-hour battery life",
+      "Premium leather ear cups",
+      "Bluetooth 5.0",
+      "Multi-device pairing"
+    ],
+    "inStock": true,
+    "stockCount": 45,
+    "variants": [
+      { "id": "var_001_black", "type": "color", "name": "Black", "value": "#000000", "inStock": true },
+      { "id": "var_001_silver", "type": "color", "name": "Silver", "value": "#C0C0C0", "inStock": true }
+    ],
+    "sku": "AUD-WH-001",
+    "tags": ["wireless", "noise-cancelling", "premium", "audio"],
+    "weight": "250g",
+    "dimensions": "20 x 18 x 8 cm",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "isFeatured": true,
+    "isNewArrival": false
+  },
+  {
+    "id": "prod_002",
+    "slug": "smart-watch-pro",
+    "name": "Smart Watch Pro",
+    "brand": "TechWear",
+    "category": "electronics",
+    "subcategory": "Wearables",
+    "price": 449.99,
+    "currency": "USD",
+    "rating": 4.6,
+    "reviewCount": 892,
+    "images": [
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80",
+      "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80",
+    "description": "Stay connected and healthy with our advanced smartwatch. Track fitness, monitor heart rate, and receive notifications all from your wrist.",
+    "shortDescription": "Advanced smartwatch with fitness tracking and health monitoring.",
+    "specifications": {
+      "Display": "1.9\" AMOLED",
+      "Battery Life": "7 days",
+      "Water Resistance": "5ATM",
+      "Sensors": "Heart rate, GPS, SpO2",
+      "Compatibility": "iOS & Android"
+    },
+    "features": [
+      "Heart rate monitoring",
+      "GPS tracking",
+      "Sleep analysis",
+      "Water resistant 50m",
+      "7-day battery life"
+    ],
+    "inStock": true,
+    "stockCount": 28,
+    "sku": "TWR-SW-002",
+    "tags": ["smartwatch", "fitness", "health", "wearable"],
+    "weight": "45g",
+    "createdAt": "2026-01-05T00:00:00Z",
+    "isFeatured": true,
+    "isNewArrival": true
+  },
+  {
+    "id": "prod_003",
+    "slug": "4k-ultra-hd-monitor",
+    "name": "4K Ultra HD Monitor 27\"",
+    "brand": "ViewTech",
+    "category": "electronics",
+    "subcategory": "Monitors",
+    "price": 599.99,
+    "currency": "USD",
+    "rating": 4.7,
+    "reviewCount": 654,
+    "images": [
+      "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&q=80",
+    "description": "Professional-grade 4K monitor with stunning color accuracy and HDR support. Perfect for designers, photographers, and content creators.",
+    "shortDescription": "27-inch 4K monitor with HDR and 99% sRGB color gamut.",
+    "specifications": {
+      "Resolution": "3840 x 2160",
+      "Panel Type": "IPS",
+      "Refresh Rate": "60Hz",
+      "Response Time": "5ms",
+      "Color Gamut": "99% sRGB",
+      "Ports": "HDMI, DisplayPort, USB-C"
+    },
+    "features": [
+      "4K Ultra HD resolution",
+      "HDR10 support",
+      "99% sRGB color accuracy",
+      "USB-C with 65W power delivery",
+      "Ergonomic stand"
+    ],
+    "inStock": true,
+    "stockCount": 15,
+    "sku": "VWT-MON-003",
+    "tags": ["monitor", "4k", "display", "professional"],
+    "weight": "5.5kg",
+    "createdAt": "2025-12-20T00:00:00Z",
+    "isFeatured": false,
+    "isNewArrival": false
+  },
+  {
+    "id": "prod_004",
+    "slug": "wireless-keyboard-mouse",
+    "name": "Wireless Keyboard & Mouse Combo",
+    "brand": "KeyMaster",
+    "category": "electronics",
+    "subcategory": "Peripherals",
+    "price": 89.99,
+    "currency": "USD",
+    "rating": 4.5,
+    "reviewCount": 1423,
+    "images": [
+      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&q=80",
+    "description": "Ergonomic wireless keyboard and mouse combo designed for comfort and productivity. Features silent keys and precision tracking.",
+    "shortDescription": "Ergonomic wireless keyboard and mouse with silent operation.",
+    "specifications": {
+      "Connection": "2.4GHz Wireless",
+      "Battery Life": "12 months",
+      "Key Type": "Membrane",
+      "DPI": "1600",
+      "Compatibility": "Windows, Mac, Linux"
+    },
+    "features": [
+      "Whisper-quiet keys",
+      "Ergonomic design",
+      "12-month battery life",
+      "Plug-and-play USB receiver",
+      "Spill-resistant"
+    ],
+    "inStock": true,
+    "stockCount": 87,
+    "sku": "KM-COMBO-004",
+    "tags": ["keyboard", "mouse", "wireless", "ergonomic"],
+    "weight": "850g",
+    "createdAt": "2025-11-15T00:00:00Z",
+    "isFeatured": false,
+    "isNewArrival": false
+  },
+  {
+    "id": "prod_005",
+    "slug": "premium-denim-jacket",
+    "name": "Premium Denim Jacket",
+    "brand": "UrbanStyle",
+    "category": "fashion",
+    "subcategory": "Outerwear",
+    "price": 129.99,
+    "currency": "USD",
+    "rating": 4.4,
+    "reviewCount": 567,
+    "images": [
+      "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+    "description": "Classic denim jacket crafted from premium Japanese denim. Features a modern slim fit and distressed details for a contemporary look.",
+    "shortDescription": "Classic denim jacket with premium Japanese denim.",
+    "specifications": {
+      "Material": "100% Cotton Denim",
+      "Origin": "Japan",
+      "Fit": "Slim",
+      "Care": "Machine wash cold"
+    },
+    "features": [
+      "Premium Japanese denim",
+      "Distressed details",
+      "Slim fit design",
+      "Copper rivets",
+      "Adjustable waist"
+    ],
+    "inStock": true,
+    "stockCount": 32,
+    "variants": [
+      { "id": "var_005_s", "type": "size", "name": "Small", "value": "S", "inStock": true },
+      { "id": "var_005_m", "type": "size", "name": "Medium", "value": "M", "inStock": true },
+      { "id": "var_005_l", "type": "size", "name": "Large", "value": "L", "inStock": true },
+      { "id": "var_005_xl", "type": "size", "name": "X-Large", "value": "XL", "inStock": false }
+    ],
+    "sku": "URB-DNM-005",
+    "tags": ["denim", "jacket", "fashion", "casual"],
+    "createdAt": "2026-01-03T00:00:00Z",
+    "isFeatured": true,
+    "isNewArrival": true
+  },
+  {
+    "id": "prod_006",
+    "slug": "running-shoes",
+    "name": "Performance Running Shoes",
+    "brand": "SprintTech",
+    "category": "sports",
+    "subcategory": "Footwear",
+    "price": 159.99,
+    "currency": "USD",
+    "rating": 4.9,
+    "reviewCount": 2341,
+    "images": [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80",
+    "description": "Engineered for speed and comfort, these running shoes feature responsive cushioning and a lightweight design for optimal performance.",
+    "shortDescription": "Lightweight running shoes with responsive cushioning.",
+    "specifications": {
+      "Upper Material": "Breathable Mesh",
+      "Midsole": "EVA Foam",
+      "Outsole": "Rubber",
+      "Drop": "10mm",
+      "Weight": "280g"
+    },
+    "features": [
+      "Responsive cushioning",
+      "Breathable mesh upper",
+      "Durable rubber outsole",
+      "Lightweight design",
+      "Arch support"
+    ],
+    "inStock": true,
+    "stockCount": 56,
+    "variants": [
+      { "id": "var_006_8", "type": "size", "name": "US 8", "value": "8", "inStock": true },
+      { "id": "var_006_9", "type": "size", "name": "US 9", "value": "9", "inStock": true },
+      { "id": "var_006_10", "type": "size", "name": "US 10", "value": "10", "inStock": true },
+      { "id": "var_006_11", "type": "size", "name": "US 11", "value": "11", "inStock": true }
+    ],
+    "sku": "SPR-RUN-006",
+    "tags": ["running", "shoes", "sports", "footwear"],
+    "createdAt": "2025-12-10T00:00:00Z",
+    "isFeatured": true,
+    "isNewArrival": false
+  },
+  {
+    "id": "prod_007",
+    "slug": "yoga-mat-premium",
+    "name": "Premium Eco Yoga Mat",
+    "brand": "ZenFit",
+    "category": "sports",
+    "subcategory": "Yoga",
+    "price": 69.99,
+    "currency": "USD",
+    "rating": 4.7,
+    "reviewCount": 1089,
+    "images": [
+      "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400&q=80",
+    "description": "Eco-friendly yoga mat made from natural rubber with excellent grip and cushioning. Perfect for all yoga styles and skill levels.",
+    "shortDescription": "Eco-friendly yoga mat with superior grip and cushioning.",
+    "specifications": {
+      "Material": "Natural Rubber",
+      "Thickness": "6mm",
+      "Dimensions": "183 x 61 cm",
+      "Weight": "2.2kg",
+      "Texture": "Non-slip surface"
+    },
+    "features": [
+      "100% natural rubber",
+      "Superior grip",
+      "6mm cushioning",
+      "Eco-friendly",
+      "Carrying strap included"
+    ],
+    "inStock": true,
+    "stockCount": 73,
+    "variants": [
+      { "id": "var_007_purple", "type": "color", "name": "Purple", "value": "#800080", "inStock": true },
+      { "id": "var_007_green", "type": "color", "name": "Green", "value": "#008000", "inStock": true },
+      { "id": "var_007_blue", "type": "color", "name": "Blue", "value": "#0000FF", "inStock": true }
+    ],
+    "sku": "ZEN-YOG-007",
+    "tags": ["yoga", "fitness", "mat", "eco-friendly"],
+    "createdAt": "2025-11-25T00:00:00Z",
+    "isFeatured": false,
+    "isNewArrival": false
+  },
+  {
+    "id": "prod_008",
+    "slug": "coffee-maker-deluxe",
+    "name": "Deluxe Coffee Maker",
+    "brand": "BrewMaster",
+    "category": "home-garden",
+    "subcategory": "Kitchen",
+    "price": 199.99,
+    "currency": "USD",
+    "rating": 4.6,
+    "reviewCount": 789,
+    "images": [
+      "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=400&q=80",
+    "description": "Professional-grade coffee maker with programmable settings, thermal carafe, and built-in grinder for the perfect cup every time.",
+    "shortDescription": "Programmable coffee maker with built-in grinder.",
+    "specifications": {
+      "Capacity": "12 cups",
+      "Grinder": "Burr grinder",
+      "Carafe Type": "Thermal stainless steel",
+      "Timer": "24-hour programmable",
+      "Power": "1200W"
+    },
+    "features": [
+      "Built-in burr grinder",
+      "Programmable timer",
+      "Thermal carafe",
+      "Adjustable brew strength",
+      "Auto shut-off"
+    ],
+    "inStock": true,
+    "stockCount": 21,
+    "sku": "BRW-COF-008",
+    "tags": ["coffee", "kitchen", "appliance", "brewing"],
+    "weight": "4.5kg",
+    "createdAt": "2025-12-05T00:00:00Z",
+    "isFeatured": false,
+    "isNewArrival": false
+  },
+  {
+    "id": "prod_009",
+    "slug": "luxury-bedding-set",
+    "name": "Luxury Bedding Set Queen",
+    "brand": "DreamLux",
+    "category": "home-garden",
+    "subcategory": "Bedroom",
+    "price": 249.99,
+    "originalPrice": 349.99,
+    "discount": 29,
+    "currency": "USD",
+    "rating": 4.8,
+    "reviewCount": 1567,
+    "images": [
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&q=80",
+    "description": "Premium Egyptian cotton bedding set featuring a duvet cover, fitted sheet, and pillowcases. Ultra-soft with a luxurious 600 thread count.",
+    "shortDescription": "600 thread count Egyptian cotton bedding set.",
+    "specifications": {
+      "Material": "100% Egyptian Cotton",
+      "Thread Count": "600",
+      "Size": "Queen",
+      "Set Includes": "Duvet cover, fitted sheet, 2 pillowcases",
+      "Care": "Machine washable"
+    },
+    "features": [
+      "600 thread count",
+      "100% Egyptian cotton",
+      "Breathable and soft",
+      "Deep pocket fitted sheet",
+      "Machine washable"
+    ],
+    "inStock": true,
+    "stockCount": 34,
+    "variants": [
+      { "id": "var_009_white", "type": "color", "name": "White", "value": "#FFFFFF", "inStock": true },
+      { "id": "var_009_gray", "type": "color", "name": "Gray", "value": "#808080", "inStock": true },
+      { "id": "var_009_navy", "type": "color", "name": "Navy", "value": "#000080", "inStock": true }
+    ],
+    "sku": "DRM-BED-009",
+    "tags": ["bedding", "cotton", "luxury", "bedroom"],
+    "createdAt": "2026-01-02T00:00:00Z",
+    "isFeatured": true,
+    "isNewArrival": true
+  },
+  {
+    "id": "prod_010",
+    "slug": "hydrating-face-serum",
+    "name": "Hydrating Face Serum",
+    "brand": "GlowSkin",
+    "category": "beauty",
+    "subcategory": "Skincare",
+    "price": 79.99,
+    "currency": "USD",
+    "rating": 4.9,
+    "reviewCount": 2134,
+    "images": [
+      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80"
+    ],
+    "thumbnail": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80",
+    "description": "Advanced hydrating serum with hyaluronic acid and vitamin C. Reduces fine lines and provides lasting moisture for radiant, youthful skin.",
+    "shortDescription": "Hydrating serum with hyaluronic acid and vitamin C.",
+    "specifications": {
+      "Volume": "30ml",
+      "Key Ingredients": "Hyaluronic acid, Vitamin C, Niacinamide",
+      "Skin Type": "All skin types",
+      "Application": "Morning and evening",
+      "Free From": "Parabens, sulfates, fragrance"
+    },
+    "features": [
+      "Hyaluronic acid",
+      "Vitamin C brightening",
+      "Reduces fine lines",
+      "Deeply hydrating",
+      "Cruelty-free"
+    ],
+    "inStock": true,
+    "stockCount": 142,
+    "sku": "GLW-SER-010",
+    "tags": ["skincare", "serum", "beauty", "hydrating"],
+    "createdAt": "2025-12-15T00:00:00Z",
+    "isFeatured": true,
+    "isNewArrival": false
+  }
+]
