@@ -4,3 +4,18 @@ apm_modules/
 **/AGENTS.md
 AGENTS.md
 .apm
+node_modules
+
+# Next.js
+/.next/
+/out/
+
+# TypeScript
+next-env.d.ts
+*.tsbuildinfo
+
+# Env files
+.env*.local
+
+# Vercel
+.vercel
