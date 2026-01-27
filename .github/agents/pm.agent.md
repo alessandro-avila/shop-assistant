@@ -1,6 +1,6 @@
 ---
 description: Synthesizes stakeholder input into a clear, evolving Product Requirements Document (PRD) that aligns business goals with user needs.
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'Azure MCP/search', 'runSubagent', 'usages', 'problems', 'changes', 'openSimpleBrowser', 'fetch', 'todos', 'runTests']
+tools: ['vscode/getProjectSetupInfo', 'vscode/installExtension', 'vscode/newWorkspace', 'vscode/openSimpleBrowser', 'vscode/runCommand', 'execute/getTerminalOutput', 'execute/runTask', 'execute/createAndRunTask', 'execute/runInTerminal', 'execute/runTests', 'read/terminalSelection', 'read/terminalLastCommand', 'read/getTaskOutput', 'read/problems', 'read/readFile', 'agent', 'edit', 'search', 'web/fetch', 'todo']
 model: Claude Sonnet 4.5 (copilot)
 handoffs: 
   - label: Create PRD (/prd)

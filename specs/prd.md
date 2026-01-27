@@ -1,10 +1,11 @@
 # Product Requirements Document: Shop Assistant
 
 ## Document Information
-- **Version**: 1.0
-- **Last Updated**: January 9, 2026
-- **Status**: Draft
+- **Version**: 2.0
+- **Last Updated**: January 27, 2026
+- **Status**: In Progress
 - **Owner**: Product Team
+- **Change Summary**: Added backend (.NET 10 API) and database (SQL Server) layers while maintaining simplicity for local development
 
 ---
 
@@ -17,29 +18,114 @@ Shop Assistant is a premium e-commerce demonstration website designed to showcas
 To create the most compelling, visually stunning e-commerce demo that demonstrates the art of the possible in modern web development—a showcase piece that leaves audiences impressed with its premium feel, smooth interactions, and attention to detail.
 
 ### 1.3 Product Positioning
-Shop Assistant positions itself as a **demonstration-grade** e-commerce platform that:
-- Showcases professional-quality frontend development
+Shop Assistant positions itself as a **demonstration-grade** full-stack e-commerce platform that:
+- Showcases professional-quality frontend development with React/Next.js
 - Demonstrates modern UX patterns and smooth animations
+- Illustrates a clean, simple backend API architecture with .NET 10
+- Shows database integration patterns with SQL Server
 - Serves as a reference implementation for premium e-commerce experiences
-- Functions as a portfolio piece and live demo tool
+- Functions as a portfolio piece and live demo tool for full-stack capabilities
 
 ### 1.4 Key Differentiators
-- **Premium Design Language**: Refined aesthetics that rival production e-commerce sites
-- **Demo-Optimized**: Every interaction designed to impress in live presentations
+- **Simple Full-Stack Architecture**: Clean separation of frontend, API, and database layers
+- **Local-First Development**: Runs entirely on localhost without cloud dependencies
+- **Straightforward Backend**: Minimal .NET API showcasing RESTful patterns
+- **Easy Database Setup**: SQL Server with simple schema and seed data scripts
 - **Zero Dependencies**: Fully self-contained with mocked data—no backend required
 - **Instant Setup**: Ready to demo immediately without configuration or API setup
+
+---
+
+## 2. Scope
+
+### 2.1 In Scope
+**What will be delivered**:
+
+#### Frontend (Phase 1 - Existing)
+- Premium e-commerce UI with Next.js + React + TypeScript
+- Product browsing, filtering, search capabilities
+- Shopping cart with localStorage persistence
+- Multi-step checkout flow
+- Responsive design (mobile, tablet, desktop)
+- Smooth animations and interactions
+- Full demo-ready user experience
+
+#### Backend API (Phase 2 - NEW)
+- .NET 10 Web API with RESTful endpoints
+- Simple API contract for products, categories, cart, orders
+- Entity Framework Core for database access
+- Basic CRUD operations
+- JSON response format
+- CORS configuration for frontend
+- Swagger/OpenAPI documentation
+- Local development setup (runs on localhost:5000)
+
+#### Database Layer (Phase 2 - NEW)
+- SQL Server database (LocalDB or Developer Edition)
+- Simple schema: Products, Categories, CartItems, Orders, OrderItems
+- Entity Framework Core migrations
+- Seed data scripts for demo catalog (50-100 products)
+- Database initialization scripts
+- Local database setup
+
+#### Integration (Phase 2)
+- Frontend API client to connect to backend
+- Replace mocked data with real API calls
+- Error handling for API failures
+- Loading states during API calls
+- Maintain cart functionality (localStorage or API-based)
+
+### 2.2 Out of Scope
+**What will NOT be addressed**:
+
+#### Authentication & Security
+- ❌ Real user authentication/authorization (mock only)
+- ❌ OAuth, JWT, session management
+- ❌ Password hashing and security
+- ❌ User registration system
+- ❌ Role-based access control
+
+#### Advanced Backend Features
+- ❌ Complex business logic
+- ❌ Background jobs or queues
+- ❌ Caching layers (Redis, etc.)
+- ❌ File upload/storage systems
+- ❌ Email services
+- ❌ Payment processing integration
+- ❌ Real-time features (SignalR)
+- ❌ API versioning
+- ❌ Rate limiting
+
+#### DevOps & Deployment
+- ❌ Cloud deployment (Azure, AWS)
+- ❌ Docker containerization (except for SQL Server)
+- ❌ CI/CD pipelines
+- ❌ Production monitoring/logging
+- ❌ Load balancing
+- ❌ Database replication
+
+#### Production Readiness
+- ❌ Production-grade error handling
+- ❌ Comprehensive logging (Serilog, etc.)
+- ❌ Health checks and monitoring
+- ❌ Performance optimization at scale
+- ❌ Security hardening
+- ❌ Data backup strategies
+
+**Priority**: Keep it simple. This is a demo/learning project that runs locally, not a production system.
 
 ---
 
 ## 2. Target Audience
 
 ### 2.1 Primary Audience
-**Demo Viewers** - individuals watching live demonstrations including:
-- Potential clients and stakeholders evaluating development capabilities
+**Demo Viewers & Developers** - individuals viewing or learning from the solution:
+- Potential clients and stakeholders evaluating full-stack development capabilities
 - Conference and meetup attendees
 - Technical evaluators and decision-makers
-- Fellow developers and designers seeking inspiration
-- Workshop and training participants
+- Fellow developers learning full-stack patterns (frontend + backend + database)
+- Workshop and training participants learning .NET and React integration
+- Students and junior developers building portfolio projects
 
 ### 2.2 Secondary Audience
 **Presenters** - individuals conducting the demonstrations:
@@ -50,10 +136,12 @@ Shop Assistant positions itself as a **demonstration-grade** e-commerce platform
 
 ### 2.3 Audience Needs
 - **First Impressions Matter**: Viewers judge quality within seconds
-- **Clear Value Demonstration**: Must immediately convey technical sophistication
+- **Clear Value Demonstration**: Must show full-stack capabilities (frontend + API + database)
 - **Relatable Use Case**: E-commerce is universally understood
 - **Visual Impact**: Needs to stand out from typical demo applications
 - **Smooth Performance**: Any lag or jank undermines credibility
+- **Simple Architecture**: Easy to understand and replicate for learning purposes
+- **Local-First Development**: Should run on localhost without complex cloud setup
 
 ---
 
@@ -230,6 +318,216 @@ Multi-step checkout with progress indicator:
 - Social proof elements (testimonials, review highlights)
 - Value propositions (Free Shipping, Easy Returns, etc.)
 
+### 3.6 Backend API Features (NEW - Phase 2)
+
+#### 3.6.1 RESTful API Endpoints
+**Products API**:
+- List products with optional filtering (category, price range, rating)
+- Get single product by ID
+- Search products by name/description
+- Get featured products
+- Get new arrivals
+
+**Categories API**:
+- List all categories with product counts
+- Get products by category
+- Category metadata (name, description, image)
+
+**Cart API** (Optional - can use localStorage initially):
+- Get current cart items
+- Add item to cart
+- Update cart item quantity
+- Remove item from cart
+- Clear cart
+
+**Orders API**:
+- Create order from cart
+- Get order by ID
+- Get order confirmation details
+- Mock order history
+
+#### 3.6.2 API Response Format
+Consistent JSON response structure:
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operation successful",
+  "error": null
+}
+```
+
+Error response:
+```json
+{
+  "success": false,
+  "data": null,
+  "message": "Error description",
+  "error": {
+    "code": "PRODUCT_NOT_FOUND",
+    "details": "Product with ID 123 does not exist"
+  }
+}
+```
+
+#### 3.6.3 API Documentation
+- Swagger/OpenAPI UI available at `/swagger`
+- Interactive API testing interface
+- Request/response examples for each endpoint
+- Clear documentation of query parameters and filters
+
+#### 3.6.4 Data Validation
+- Input validation for all POST/PUT requests
+- Price validation (must be positive)
+- Quantity validation (must be positive integer)
+- Required field validation
+- Data type validation
+- Return clear error messages for validation failures
+
+#### 3.6.5 Error Handling
+- Graceful handling of database connection failures
+- 404 responses for not found resources
+- 400 responses for bad requests
+- 500 responses for server errors
+- Detailed error logging to console (development)
+- Generic error messages to client (avoid exposing internals)
+
+### 3.7 Database Features (NEW - Phase 2)
+
+#### 3.7.1 Database Schema
+Simple, normalized schema with core tables:
+- **Products**: Product catalog with prices, descriptions, images
+- **Categories**: Product categories with metadata
+- **CartItems**: Shopping cart items (optional - can use localStorage)
+- **Orders**: Order header information
+- **OrderItems**: Line items for each order
+
+**Relationships**:
+- Products belong to Categories (Many-to-One)
+- Orders have OrderItems (One-to-Many)
+- OrderItems reference Products (Many-to-One)
+
+#### 3.7.2 Data Seeding
+- Seed script to populate initial product catalog
+- 50-100 demo products across 6 categories
+- Realistic product data (names, descriptions, prices)
+- Product images (URLs or paths)
+- Varied ratings and prices for filtering demos
+- Run automatically on first database creation
+
+#### 3.7.3 Database Migrations
+- Entity Framework Core migrations for schema changes
+- Migration scripts committed to source control
+- Automated migration application on startup (development)
+- Rollback capability for schema changes
+
+#### 3.7.4 Database Indexes
+- Primary keys on all tables (auto-generated)
+- Index on Products.CategoryId (for category filtering)
+- Index on Products.Price (for price range queries)
+- Index on Products.Rating (for rating filters)
+- Keep indexes minimal for simplicity
+
+---
+
+## 3.8 High-Level Requirements for Backend Integration
+
+### 3.8.1 Functional Requirements
+
+**[REQ-1] Product Data Persistence**
+- System must store product catalog in SQL Server database
+- Products must include: name, description, price, category, brand, images, rating, stock status
+- Products must be retrievable via RESTful API endpoints
+
+**[REQ-2] API Endpoints**
+- Backend must provide RESTful API endpoints for products, categories, cart, and orders
+- API must return JSON responses with consistent structure
+- API must handle filtering, sorting, and search operations
+- API must implement proper HTTP status codes (200, 404, 400, 500)
+
+**[REQ-3] Frontend Integration**
+- Frontend must call backend API instead of using mocked data
+- Frontend must handle API loading states
+- Frontend must handle API error states gracefully
+- Frontend must maintain existing user experience (no degradation)
+
+**[REQ-4] Local Development**
+- Entire stack must run on localhost without cloud dependencies
+- Backend API must run on http://localhost:5000
+- Frontend must run on http://localhost:3000
+- SQL Server database must be accessible locally (LocalDB, Developer, or Docker)
+
+**[REQ-5] Data Seeding**
+- Database must be automatically populated with demo data on first run
+- Seed data must include 50-100 products across 6 categories
+- Seed data must be realistic and demo-ready
+
+**[REQ-6] Simple Architecture**
+- Backend code must be simple and easy to understand
+- No complex abstractions or patterns (avoid over-engineering)
+- Clear separation: Controllers → DbContext → Database
+- Minimal business logic layer
+
+### 3.8.2 Non-Functional Requirements
+
+**[REQ-7] Performance**
+- API response time < 500ms for product listing
+- API response time < 200ms for single product retrieval
+- Database queries must be efficient (no N+1 problems)
+
+**[REQ-8] Developer Experience**
+- Setup instructions must be clear and concise
+- Fewer than 5 commands to get entire stack running
+- Automatic database creation and seeding
+- Good error messages when setup fails
+
+**[REQ-9] API Documentation**
+- Swagger UI must be available at `/swagger`
+- All endpoints must be documented with examples
+- Request/response schemas must be clearly defined
+
+**[REQ-10] Code Quality**
+- Backend code must follow .NET conventions
+- Use async/await for all database operations
+- Proper error handling and logging
+- Clear variable and method names
+
+---
+
+## 3.9 User Stories for Backend Integration
+
+```gherkin
+As a frontend developer, I want to call a REST API to get products,
+so that the application uses real data instead of mocked JSON files.
+
+As a frontend developer, I want consistent API response formats,
+so that I can easily handle responses without complex parsing logic.
+
+As a user, I want products to be stored in a database,
+so that data persists between application restarts.
+
+As a developer, I want to easily seed demo data,
+so that I can quickly set up a working demo environment.
+
+As a presenter, I want the full stack to run locally,
+so that I can demo without internet connectivity or cloud dependencies.
+
+As a developer, I want clear API documentation,
+so that I can understand available endpoints without reading code.
+
+As a frontend developer, I want proper error responses from the API,
+so that I can show meaningful error messages to users.
+
+As a user, I want to browse products fetched from a database,
+so that the application feels like a real e-commerce platform.
+
+As a developer, I want simple backend architecture,
+so that I can easily understand and modify the code.
+
+As a user, I want cart operations to persist in the database (optional),
+so that my cart is saved even if I close the browser.
+```
+
 ---
 
 ## 4. User Experience Requirements
@@ -357,7 +655,321 @@ Multi-step checkout with progress indicator:
 
 ## 5. Technical Considerations
 
-### 5.1 Technology Stack (Recommended)
+### 5.1 Technology Stack
+
+#### 5.1.1 Frontend
+- **React** with TypeScript for type safety
+- **Next.js 14+** for enhanced routing and optimizations
+- **Tailwind CSS** for utility-first styling
+- **Framer Motion** for animations
+
+#### 5.1.2 Backend API
+- **.NET 10** (latest LTS) with minimal API or controllers
+- **RESTful API** design with simple endpoints
+- **Entity Framework Core** for database access (code-first approach)
+- **Swagger/OpenAPI** for API documentation
+- **Local development**: Runs on http://localhost:5000 or :5001 (HTTPS)
+
+#### 5.1.3 Database
+- **SQL Server** (LocalDB or Developer Edition)
+- **Simple schema**: Products, Categories, CartItems, Orders tables
+- **Seed data scripts** for initial product catalog
+- **Migrations** managed by Entity Framework Core
+
+#### 5.1.4 Development Requirements
+- **Node.js 20.x** for frontend
+- **.NET 10 SDK** for backend
+- **SQL Server** (LocalDB or Docker container)
+- **VS Code** or **Visual Studio** for development
+- **Package Managers**: pnpm (frontend), dotnet CLI (backend)
+
+### 5.2 Architecture Overview
+
+#### 5.2.1 Three-Layer Architecture
+
+```
+┌─────────────────────────────────────┐
+│  Frontend (Next.js + React)        │  Port: 3000
+│  - UI Components                    │
+│  - Client-side state (cart)         │
+│  - API calls to backend             │
+└─────────────┬───────────────────────┘
+              │ HTTP/REST
+┌─────────────▼───────────────────────┐
+│  Backend API (.NET 10)              │  Port: 5000
+│  - RESTful endpoints                │
+│  - Business logic (minimal)         │
+│  - Data validation                  │
+└─────────────┬───────────────────────┘
+              │ Entity Framework Core
+┌─────────────▼───────────────────────┐
+│  Database (SQL Server)              │
+│  - Products, Categories             │
+│  - CartItems, Orders                │
+│  - Seed data                        │
+└─────────────────────────────────────┘
+```
+
+#### 5.2.2 API Contract (Simple RESTful Endpoints)
+
+**Products**:
+- `GET /api/products` - List all products with optional filters
+- `GET /api/products/{id}` - Get single product by ID
+- `GET /api/products/search?q={query}` - Search products
+
+**Categories**:
+- `GET /api/categories` - List all categories
+- `GET /api/categories/{id}/products` - Get products by category
+
+**Cart** (session-based or user-based):
+- `GET /api/cart` - Get current cart items
+- `POST /api/cart/items` - Add item to cart
+- `PUT /api/cart/items/{id}` - Update cart item quantity
+- `DELETE /api/cart/items/{id}` - Remove item from cart
+
+**Orders** (simplified):
+- `POST /api/orders` - Create new order from cart
+- `GET /api/orders/{id}` - Get order details
+
+**Response Format** (Consistent JSON):
+```json
+{
+  "success": true,
+  "data": { ... },
+  "error": null
+}
+```
+
+#### 5.2.3 Database Schema (Simplified)
+
+**Tables**:
+1. **Products**
+   - ProductId (PK, int, identity)
+   - Name (nvarchar(200))
+   - Description (nvarchar(max))
+   - Price (decimal(18,2))
+   - CategoryId (FK)
+   - Brand (nvarchar(100))
+   - ImageUrl (nvarchar(500))
+   - Rating (decimal(3,2))
+   - InStock (bit)
+   - CreatedAt (datetime)
+
+2. **Categories**
+   - CategoryId (PK, int, identity)
+   - Name (nvarchar(100))
+   - Description (nvarchar(500))
+   - ImageUrl (nvarchar(500))
+
+3. **CartItems** (optional - can use localStorage initially)
+   - CartItemId (PK, int, identity)
+   - SessionId (nvarchar(100)) or UserId
+   - ProductId (FK)
+   - Quantity (int)
+   - AddedAt (datetime)
+
+4. **Orders** (simplified)
+   - OrderId (PK, int, identity)
+   - OrderNumber (nvarchar(50), unique)
+   - TotalAmount (decimal(18,2))
+   - Status (nvarchar(50))
+   - ShippingAddress (nvarchar(max)) - JSON string
+   - CreatedAt (datetime)
+
+5. **OrderItems**
+   - OrderItemId (PK, int, identity)
+   - OrderId (FK)
+   - ProductId (FK)
+   - Quantity (int)
+   - UnitPrice (decimal(18,2))
+
+**Relationships**:
+- Products → Categories (Many-to-One)
+- CartItems → Products (Many-to-One)
+- Orders → OrderItems (One-to-Many)
+- OrderItems → Products (Many-to-One)
+
+### 5.3 Data Flow
+
+#### 5.3.1 Product Browsing Flow
+```
+User browses products
+    ↓
+Frontend calls GET /api/products
+    ↓
+Backend queries database via EF Core
+    ↓
+Returns JSON product list
+    ↓
+Frontend renders product grid
+```
+
+#### 5.3.2 Add to Cart Flow (Hybrid Approach)
+```
+User clicks "Add to Cart"
+    ↓
+Option A: Store in localStorage (simpler for demo)
+    ↓
+Frontend updates cart state locally
+
+Option B: Persist to backend
+    ↓
+Frontend calls POST /api/cart/items
+    ↓
+Backend saves to CartItems table
+    ↓
+Returns updated cart
+```
+
+**Recommendation**: Start with localStorage (Option A) for simplicity, add backend persistence (Option B) as enhancement.
+
+#### 5.3.3 Checkout Flow
+```
+User proceeds to checkout
+    ↓
+Frontend submits order: POST /api/orders
+    ↓
+Backend creates Order and OrderItems records
+    ↓
+Backend returns OrderId and confirmation
+    ↓
+Frontend shows success page
+    ↓
+Backend clears cart (if persisted)
+```
+
+### 5.4 Backend API Project Structure
+
+```
+ShopAssistant.Api/
+├── Controllers/           # Or Endpoints/ for Minimal APIs
+│   ├── ProductsController.cs
+│   ├── CategoriesController.cs
+│   ├── CartController.cs
+│   └── OrdersController.cs
+├── Data/
+│   ├── ShopDbContext.cs  # EF Core context
+│   ├── Migrations/       # Auto-generated
+│   └── SeedData.cs       # Initial data seeding
+├── Models/
+│   ├── Product.cs
+│   ├── Category.cs
+│   ├── CartItem.cs
+│   ├── Order.cs
+│   └── OrderItem.cs
+├── DTOs/                 # Data Transfer Objects
+│   ├── ProductDto.cs
+│   ├── CartItemDto.cs
+│   └── CreateOrderRequest.cs
+├── Services/             # Business logic (if needed)
+│   └── OrderService.cs
+├── Program.cs            # Entry point
+├── appsettings.json      # Configuration
+└── ShopAssistant.Api.csproj
+```
+
+### 5.5 Local Development Setup
+
+#### 5.5.1 Database Setup Options
+
+**Option 1: SQL Server LocalDB** (Recommended for Windows)
+- Included with Visual Studio
+- Lightweight, file-based SQL Server
+- Connection string: `Server=(localdb)\\mssqllocaldb;Database=ShopAssistantDb;Trusted_Connection=true;`
+- No separate installation needed
+
+**Option 2: SQL Server Developer Edition**
+- Full SQL Server features
+- Free for development
+- Runs as Windows service
+- Connection string: `Server=localhost;Database=ShopAssistantDb;Trusted_Connection=true;`
+
+**Option 3: SQL Server Docker Container**
+- Cross-platform (Windows/Mac/Linux)
+- Isolated environment
+- Start with: `docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=YourStrong@Password" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest`
+- Connection string: `Server=localhost,1433;Database=ShopAssistantDb;User Id=sa;Password=YourStrong@Password;TrustServerCertificate=true;`
+
+#### 5.5.2 Backend Development Workflow
+
+**Initial Setup**:
+```bash
+# Navigate to backend directory
+cd ShopAssistant.Api
+
+# Restore dependencies
+dotnet restore
+
+# Create initial migration
+dotnet ef migrations add InitialCreate
+
+# Create database and apply migrations
+dotnet ef database update
+
+# Seed sample data
+dotnet run --seed-data
+
+# Run backend API
+dotnet run
+# API available at: https://localhost:5001 and http://localhost:5000
+```
+
+**Frontend Configuration**:
+```typescript
+// frontend/lib/config.ts
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+```
+
+**Frontend API Client**:
+```typescript
+// frontend/lib/api/client.ts
+export async function getProducts(filters?: ProductFilters): Promise<Product[]> {
+  const response = await fetch(`${API_BASE_URL}/products`);
+  const result = await response.json();
+  return result.data;
+}
+```
+
+### 5.6 CORS Configuration
+
+Backend must enable CORS for frontend origin:
+```csharp
+// Program.cs
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
+app.UseCors("AllowFrontend");
+```
+
+### 5.7 Development Requirements Summary
+
+**System Prerequisites**:
+- ✅ Node.js 20.x (for frontend)
+- ✅ .NET 10 SDK (for backend)
+- ✅ SQL Server (LocalDB, Developer, or Docker)
+- ✅ Visual Studio Code or Visual Studio
+- ✅ Git for version control
+
+**Startup Sequence**:
+1. Start SQL Server (if using Developer/Docker)
+2. Start backend API: `dotnet run` (Port 5000/5001)
+3. Start frontend: `pnpm dev` (Port 3000)
+4. Open browser: http://localhost:3000
+
+**Development Ports**:
+- Frontend: 3000
+- Backend: 5000 (HTTP), 5001 (HTTPS)
+- Database: 1433 (SQL Server default)
+
+### 5.1 Technology Stack (Recommended) - DEPRECATED
+
+**Note**: This section has been superseded by section 5.1 above which includes backend and database specifications.
 
 #### 5.1.1 Frontend Framework
 - **React** with TypeScript for type safety
@@ -793,11 +1405,125 @@ src/components/
 
 ---
 
-## 6. Technical Risks & Mitigation Strategies
+## 6. Assumptions & Constraints
 
-### 6.1 Identified Risks
+### 6.1 Assumptions
 
-#### 6.1.1 Performance Risks
+**Technical Assumptions**:
+- [ASSUMPTION-1] Developers have Windows, macOS, or Linux with ability to run .NET 10 SDK
+- [ASSUMPTION-2] SQL Server (LocalDB, Developer, or Docker) can be installed locally
+- [ASSUMPTION-3] Developers have Node.js 20.x and pnpm installed
+- [ASSUMPTION-4] Localhost ports 3000, 5000, 5001, and 1433 are available
+- [ASSUMPTION-5] Developers have basic familiarity with React/Next.js and C#/.NET
+
+**Data Assumptions**:
+- [ASSUMPTION-6] Demo catalog of 50-100 products is sufficient for demonstration purposes
+- [ASSUMPTION-7] Mocked user authentication is acceptable (no real security needed)
+- [ASSUMPTION-8] Product images can be stored as URLs or local file paths
+- [ASSUMPTION-9] Cart can use localStorage or database (hybrid approach acceptable)
+- [ASSUMPTION-10] Orders don't need real payment processing
+
+**Business Assumptions**:
+- [ASSUMPTION-11] This is a demo/learning project, not a production system
+- [ASSUMPTION-12] Simplicity is prioritized over feature completeness
+- [ASSUMPTION-13] Local development is primary use case (not cloud deployment)
+- [ASSUMPTION-14] Demo audience understands this is a simplified e-commerce implementation
+
+### 6.2 Constraints
+
+**Technical Constraints**:
+- [CONSTRAINT-1] Must use .NET 10 for backend (latest LTS version)
+- [CONSTRAINT-2] Must use SQL Server for database (LocalDB, Developer, or Docker)
+- [CONSTRAINT-3] Must maintain existing Next.js frontend (no framework changes)
+- [CONSTRAINT-4] Must run entirely on localhost without cloud dependencies
+- [CONSTRAINT-5] Backend must be RESTful API (no GraphQL, gRPC, etc.)
+- [CONSTRAINT-6] Database must use Entity Framework Core (code-first approach)
+
+**Complexity Constraints**:
+- [CONSTRAINT-7] Keep backend simple - no microservices, no complex patterns
+- [CONSTRAINT-8] Avoid over-engineering - prefer simple solutions over clever ones
+- [CONSTRAINT-9] No authentication/authorization complexity (mock only)
+- [CONSTRAINT-10] No caching layers, message queues, or background jobs
+
+**Development Constraints**:
+- [CONSTRAINT-11] Setup must be quick - target < 10 minutes for full stack
+- [CONSTRAINT-12] Documentation must be clear and beginner-friendly
+- [CONSTRAINT-13] Code must be readable and easy to understand
+- [CONSTRAINT-14] No production deployment requirements (local only)
+
+**Timeline Constraints**:
+- [CONSTRAINT-15] Backend integration should not break existing frontend features
+- [CONSTRAINT-16] Maintain feature parity with current mocked-data implementation
+- [CONSTRAINT-17] Gradual migration - frontend should work with backend disabled initially
+
+---
+
+## 7. Technical Risks & Mitigation Strategies
+
+### 7.1 Identified Risks
+
+#### 7.1.1 Backend Integration Risks (NEW)
+
+**Risk**: Database connection failures during demo
+- **Impact**: Critical - Application unusable
+- **Probability**: Medium
+- **Mitigation**:
+  - Test database connectivity before demo
+  - Provide clear error messages with troubleshooting steps
+  - Have fallback to mocked data mode
+  - Document common SQL Server setup issues
+  - Test with all three database options (LocalDB, Developer, Docker)
+
+**Risk**: CORS issues between frontend (port 3000) and backend (port 5000)
+- **Impact**: High - API calls fail
+- **Probability**: High
+- **Mitigation**:
+  - Configure CORS properly in backend
+  - Test cross-origin requests early
+  - Document CORS configuration clearly
+  - Include CORS troubleshooting in setup guide
+
+**Risk**: Entity Framework migrations fail or database schema issues
+- **Impact**: High - Cannot initialize database
+- **Probability**: Medium
+- **Mitigation**:
+  - Test migrations on fresh database
+  - Provide rollback instructions
+  - Include database reset script
+  - Clear error messages for migration failures
+  - Document manual migration steps
+
+**Risk**: API endpoint design doesn't match frontend needs
+- **Impact**: High - Requires backend rework
+- **Probability**: Medium
+- **Mitigation**:
+  - Design API contract before implementation
+  - Review endpoints with frontend developers
+  - Create API interface/contract document
+  - Use Swagger for early API testing
+  - Iterative development with frequent testing
+
+**Risk**: Performance degradation with API calls vs mocked data
+- **Impact**: Medium - Slower user experience
+- **Probability**: Low
+- **Mitigation**:
+  - Implement database indexes
+  - Use async/await throughout
+  - Add API response caching where appropriate
+  - Monitor API response times
+  - Optimize database queries
+
+**Risk**: .NET 10 SDK or SQL Server not installed on developer machine
+- **Impact**: High - Cannot run backend
+- **Probability**: High (first-time setup)
+- **Mitigation**:
+  - Clear prerequisites documentation
+  - Provide installation links and instructions
+  - Script to check for prerequisites
+  - Support multiple SQL Server options (LocalDB/Developer/Docker)
+  - Video walkthrough of setup process
+
+#### 7.1.2 Performance Risks
 
 **Risk**: Animation performance degradation on lower-end devices
 - **Impact**: High - Damages demo credibility
@@ -1254,35 +1980,116 @@ Features that could be added in future iterations if the demo is expanded:
 
 ## 9. Development Phases
 
-### Phase 1: Foundation (Week 1-2)
+### Phase 1: Frontend Foundation (Week 1-2) - COMPLETED ✅
 - Project setup and configuration
 - Design system and component library
-- Static product data structure
+- Mocked product data structure
 - Basic routing and navigation
-
-### Phase 2: Core Features (Week 3-4)
 - Product listing and filtering
 - Product detail pages
 - Shopping cart functionality
 - Basic checkout flow
-
-### Phase 3: Polish & Enhancement (Week 5-6)
 - Animations and microinteractions
-- Responsive design refinement
+- Responsive design
 - Performance optimization
-- Accessibility improvements
 
-### Phase 4: Final Touches (Week 7)
-- User testing and bug fixes
-- Documentation
-- Demo scenario creation
-- Deployment
+**Status**: Frontend-only implementation is complete and running on localhost:3000
+
+### Phase 2: Backend & Database (Week 3-4) - NEW
+**Week 3: Backend API Setup**
+- .NET 10 Web API project setup
+- Entity Framework Core configuration
+- SQL Server database setup (LocalDB/Developer/Docker)
+- Database schema design and migrations
+- Seed data generation (50-100 products)
+- Basic CRUD endpoints for Products
+- Categories API endpoints
+- Swagger/OpenAPI documentation
+- CORS configuration
+- Error handling middleware
+
+**Week 4: Integration & Advanced Features**
+- Frontend API client implementation
+- Replace mocked data with real API calls
+- Loading and error state handling
+- Cart API endpoints (optional)
+- Orders API endpoints
+- Checkout integration with backend
+- End-to-end testing of full stack
+- Performance tuning
+- API response optimization
+- Database query optimization
+
+### Phase 3: Testing & Polish (Week 5)
+- Integration testing (frontend + backend + database)
+- Cross-browser testing
+- Error scenario testing
+- Database reset and seed scripts
+- Setup documentation and README updates
+- Demo scenario testing
+- Performance benchmarking
+- Bug fixes and refinements
+
+### Phase 4: Documentation & Deployment (Week 6)
+- Comprehensive setup guide
+- API documentation finalization
+- Architecture diagrams
+- Demo script updates
+- Code comments and inline documentation
+- Optional: Docker Compose for easy setup
+- Optional: Local deployment with IIS/Kestrel
+- Final testing and validation
+
+**Total Timeline**: 6 weeks (with backend integration)
+- Weeks 1-2: Frontend (DONE)
+- Weeks 3-4: Backend + Integration (NEW)
+- Week 5: Testing & Polish
+- Week 6: Documentation & Finalization
 
 ---
 
-## 10. Design Inspiration & References
+## 10. Success Metrics (Updated)
 
-### 10.1 Visual Benchmarks
+### 10.1 Phase 2 Success Criteria
+
+**Backend Completeness**:
+- [ ] All API endpoints functional and documented
+- [ ] Database schema created and seeded with demo data
+- [ ] Swagger UI accessible and showing all endpoints
+- [ ] CORS properly configured
+- [ ] Error handling in place
+- [ ] API response times < 500ms for listing, < 200ms for single items
+
+**Integration Success**:
+- [ ] Frontend successfully calls backend APIs
+- [ ] No mocked data remaining (all from database)
+- [ ] Loading states displayed during API calls
+- [ ] Error states handled gracefully
+- [ ] Cart functionality preserved (localStorage or API)
+- [ ] Checkout creates orders in database
+- [ ] No regression in frontend features
+
+**Developer Experience**:
+- [ ] Setup takes < 10 minutes from scratch
+- [ ] Clear error messages when setup fails
+- [ ] Documentation covers all setup scenarios
+- [ ] Both database options (LocalDB and Docker) tested
+- [ ] Prerequisites clearly documented
+- [ ] Troubleshooting guide available
+
+**Code Quality**:
+- [ ] Backend code follows .NET conventions
+- [ ] Async/await used throughout
+- [ ] Proper separation of concerns
+- [ ] No over-engineering
+- [ ] Clear variable and method names
+- [ ] Comments where needed
+
+---
+
+## 11. Design Inspiration & References
+
+### 11.1 Visual Benchmarks
 Look to these sites for inspiration (aesthetic only):
 - **Apple Store**: Premium product presentation
 - **Stripe**: Clean, modern design language
@@ -1290,7 +2097,7 @@ Look to these sites for inspiration (aesthetic only):
 - **Nike**: Dynamic product imagery
 - **Glossier**: Minimal, elegant e-commerce
 
-### 10.2 UX Patterns
+### 11.2 UX Patterns
 - Familiar e-commerce conventions (don't reinvent basics)
 - Clear CTAs and user paths
 - Delightful but not distracting animations
@@ -1298,9 +2105,33 @@ Look to these sites for inspiration (aesthetic only):
 
 ---
 
-## 11. Technical Review Summary
+## 12. Technical Review Summary
 
-### 11.1 Dev Lead Assessment
+### 12.1 Dev Lead Assessment
+
+**Review Date**: January 27, 2026  
+**Reviewer**: Development Lead  
+**Status**: ✅ **APPROVED FOR BACKEND IMPLEMENTATION**
+
+#### Updated Assessment (Version 2.0)
+The PRD has been updated to include backend (.NET 10 API) and database (SQL Server) layers while maintaining the simplicity principle. All additions are feasible and align with the project goals.
+
+#### Key Changes from Version 1.0:
+1. ✅ Added .NET 10 Web API with RESTful endpoints
+2. ✅ Added SQL Server database with simple schema
+3. ✅ Defined API contract and response formats
+4. ✅ Updated technical architecture to three-layer model
+5. ✅ Added backend-specific risks and mitigations
+6. ✅ Updated development phases to include backend work
+7. ✅ Added assumptions and constraints
+8. ✅ Added high-level requirements for backend
+9. ✅ Added user stories for backend integration
+10. ✅ Maintained simplicity as core principle
+
+#### Technical Feasibility: **CONFIRMED**
+All backend requirements are achievable with .NET 10 and SQL Server. The architecture remains simple and appropriate for a demo/learning project.
+
+#### Previous Assessment (Version 1.0)
 
 **Review Date**: January 9, 2026  
 **Reviewer**: Development Lead  
@@ -1350,23 +2181,36 @@ The PRD is now **technically complete** and ready for the architecture and plann
 
 ---
 
-## 12. Appendix
+## 13. Appendix
 
-### 12.1 Glossary
+### 13.1 Glossary
 - **CTA**: Call to Action
 - **SKU**: Stock Keeping Unit
 - **UX**: User Experience
 - **UI**: User Interface
 - **A11y**: Accessibility
 - **FCP, LCP, TTI**: Performance metrics (Core Web Vitals)
+- **API**: Application Programming Interface
+- **REST**: Representational State Transfer
+- **CORS**: Cross-Origin Resource Sharing
+- **EF Core**: Entity Framework Core (ORM for .NET)
+- **DTO**: Data Transfer Object
+- **CRUD**: Create, Read, Update, Delete
+- **ORM**: Object-Relational Mapping
+- **LocalDB**: Lightweight SQL Server for development
+- **Swagger**: API documentation tool (OpenAPI)
 
-### 12.2 Open Questions
-- [ ] Specific brand identity (colors, logo)?
-- [ ] Target device mix for demo (desktop vs. mobile)?
-- [ ] Preferred tech stack?
-- [ ] Timeline constraints?
+### 13.2 Open Questions (Updated for Version 2.0)
+- [x] ~~Preferred tech stack?~~ RESOLVED: Next.js + .NET 10 + SQL Server
+- [x] ~~Timeline constraints?~~ RESOLVED: 6 weeks total (2 weeks done, 4 weeks remaining)
+- [ ] Database option preference: LocalDB vs Developer Edition vs Docker?
+- [ ] Cart persistence: localStorage (simpler) or database API (full-stack)?
+- [ ] Authentication: Mock only or add simple session-based auth?
+- [ ] Deployment target: Local only or add Azure deployment guide?
+- [ ] CI/CD setup: Required or optional?
+- [ ] Testing coverage: Manual only or add automated tests?
 
-### 12.3 Approval & Sign-off
+### 13.3 Approval & Sign-off
 
 | Role | Name | Date | Signature |
 |------|------|------|-----------|
