@@ -1,0 +1,20 @@
+### Shop Assistant API Testing
+### Base URL
+@baseUrl = http://localhost:5250
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Expected Response:
+# {
+#   "status": "Healthy",
+#   "timestamp": "2026-01-27T...",
+#   "version": "1.0.0",
+#   "environment": "Development"
+# }
+
+###
+# More endpoints will be added as they're implemented:
+# - GET {{baseUrl}}/api/products
+# - GET {{baseUrl}}/api/categories
+# - POST {{baseUrl}}/api/orders
