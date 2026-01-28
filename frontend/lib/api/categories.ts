@@ -43,7 +43,7 @@ export async function getCategories(): Promise<Category[]> {
     const categories = await get<BackendCategoryDto[]>('/categories');
     return categories.map(mapBackendCategory);
   } catch (error) {
-    console.error('Failed to fetch categories from API, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch categories, using mocked data:', error);
     return getMockedCategories();
   }
 }
@@ -66,7 +66,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 404) {
       return null;
     }
-    console.error('Failed to fetch category by slug, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch category by slug, using mocked data:', error);
     return getMockedCategoryBySlug(slug);
   }
 }
@@ -89,7 +89,7 @@ export async function getCategoryById(id: string): Promise<Category | null> {
     if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 404) {
       return null;
     }
-    console.error('Failed to fetch category by ID, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch category by ID, using mocked data:', error);
     return getMockedCategoryById(id);
   }
 }

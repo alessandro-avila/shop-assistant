@@ -131,7 +131,7 @@ export async function getProducts(
     const response = await get<BackendProductListResponse>('/products', queryParams);
     return response.items.map(mapBackendProduct);
   } catch (error) {
-    console.error('Failed to fetch products from API, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch products from API, using mocked data:', error);
     return getMockedProducts(filters);
   }
 }
@@ -154,7 +154,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 404) {
       return null;
     }
-    console.error('Failed to fetch product by ID, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch product by ID, using mocked data:', error);
     return getMockedProductById(id);
   }
 }
@@ -177,7 +177,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 404) {
       return null;
     }
-    console.error('Failed to fetch product by slug, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch product by slug, using mocked data:', error);
     return getMockedProductBySlug(slug);
   }
 }
@@ -199,7 +199,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
     });
     return response.items.map(mapBackendProduct);
   } catch (error) {
-    console.error('Failed to search products, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to search products, using mocked data:', error);
     return getMockedSearchProducts(query);
   }
 }
@@ -218,7 +218,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
     const response = await get<BackendProductListResponse>('/products/featured');
     return response.items.map(mapBackendProduct);
   } catch (error) {
-    console.error('Failed to fetch featured products, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch featured products, using mocked data:', error);
     return getMockedFeaturedProducts();
   }
 }
@@ -237,7 +237,7 @@ export async function getNewArrivals(): Promise<Product[]> {
     const response = await get<BackendProductListResponse>('/products/new-arrivals');
     return response.items.map(mapBackendProduct);
   } catch (error) {
-    console.error('Failed to fetch new arrivals, falling back to mocked data:', error);
+    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to fetch new arrivals, using mocked data:', error);
     return getMockedNewArrivals();
   }
 }
