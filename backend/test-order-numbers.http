@@ -1,0 +1,83 @@
+### Test Order Number Generation
+### Create first order of the day
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 2,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 599.98,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "test@example.com",
+    "phone": "555-123-4567",
+    "streetAddress": "123 Test St",
+    "city": "Seattle",
+    "state": "WA",
+    "postalCode": "98101",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}
+
+###
+### Create second order of the day
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 2,
+      "quantity": 1,
+      "unitPrice": 49.99
+    }
+  ],
+  "totalAmount": 49.99,
+  "shippingAddress": {
+    "fullName": "Test User 2",
+    "email": "test2@example.com",
+    "phone": "555-123-4568",
+    "streetAddress": "456 Test Ave",
+    "city": "Portland",
+    "state": "OR",
+    "postalCode": "97201",
+    "country": "USA"
+  },
+  "customerEmail": "test2@example.com",
+  "customerName": "Test User 2"
+}
+
+###
+### Create third order
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 3,
+      "quantity": 1,
+      "unitPrice": 199.99
+    }
+  ],
+  "totalAmount": 199.99,
+  "shippingAddress": {
+    "fullName": "Test User 3",
+    "email": "test3@example.com",
+    "phone": "555-123-4569",
+    "streetAddress": "789 Test Blvd",
+    "city": "San Francisco",
+    "state": "CA",
+    "postalCode": "94102",
+    "country": "USA"
+  },
+  "customerEmail": "test3@example.com",
+  "customerName": "Test User 3"
+}

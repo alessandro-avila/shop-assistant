@@ -1,118 +1,173 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Loader2, AlertCircle } from 'lucide-react';
+import { OrderConfirmationHeader } from '@/components/order/order-confirmation-header';
+import { OrderDetails } from '@/components/order/order-details';
+import { ShippingAddressDisplay } from '@/components/order/shipping-address-display';
+import { OrderActions } from '@/components/order/order-actions';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+import { getOrderById } from '@/lib/api/orders';
+import type { BackendOrderDto } from '@/lib/types/api';
 
-export default function OrderSuccessPage() {
-  const searchParams = useSearchParams();
+/**
+ * Order confirmation success page
+ * Displays order details after successful checkout
+ */
+export default function CheckoutSuccessPage() {
   const router = useRouter();
-  const [orderNumber, setOrderNumber] = useState('');
-  
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId');
+
+  const [order, setOrder] = useState<BackendOrderDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const order = searchParams.get('order');
-    if (!order) {
+    // Redirect if no orderId
+    if (!orderId) {
       router.push('/');
-    } else {
-      setOrderNumber(order);
+      return;
     }
-  }, [searchParams, router]);
-  
-  const estimatedDelivery = new Date();
-  estimatedDelivery.setDate(estimatedDelivery.getDate() + 7);
-  
-  return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', duration: 0.5 }}
-        className="text-center mb-8"
-      >
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
-          <motion.svg
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="w-12 h-12 text-green-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <motion.path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </motion.svg>
+
+    // Fetch order data
+    async function fetchOrder() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const orderData = await getOrderById(orderId!); // orderId is guaranteed non-null here
+        setOrder(orderData);
+      } catch (err: any) {
+        console.error('Failed to fetch order:', err);
+
+        if (err.response?.status === 404) {
+          setError('Order not found. Please check your order number and try again.');
+        } else if (err.response?.status >= 500) {
+          setError('Server error. Please try again later.');
+        } else if (err.request) {
+          setError('Network error. Please check your connection and try again.');
+        } else {
+          setError('An unexpected error occurred. Please try again.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchOrder();
+  }, [orderId, router]);
+
+  // Handle retry
+  const handleRetry = () => {
+    if (orderId) {
+      window.location.reload();
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-2xl mx-auto text-center">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-600" />
+          <h1 className="text-2xl font-bold mb-2">Loading Your Order...</h1>
+          <p className="text-gray-600">Please wait while we retrieve your order details.</p>
         </div>
-        
-        <h1 className="text-3xl font-bold text-neutral-900 mb-2">Order Confirmed!</h1>
-        <p className="text-xl text-neutral-600">Thank you for your purchase</p>
-      </motion.div>
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-white border border-neutral-200 rounded-lg p-8 mb-6"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <p className="text-sm text-neutral-600 mb-1">Order Number</p>
-            <p className="text-lg font-bold text-neutral-900">{orderNumber}</p>
-          </div>
-          <div>
-            <p className="text-sm text-neutral-600 mb-1">Estimated Delivery</p>
-            <p className="text-lg font-bold text-neutral-900">
-              {estimatedDelivery.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </p>
-          </div>
-        </div>
-        
-        <div className="pt-6 border-t border-neutral-200">
-          <h2 className="font-semibold text-neutral-900 mb-3">What's Next?</h2>
-          <ul className="space-y-2 text-neutral-700">
-            <li className="flex items-start">
-              <svg className="w-5 h-5 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>You'll receive a confirmation email shortly</span>
-            </li>
-            <li className="flex items-start">
-              <svg className="w-5 h-5 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>We'll send you shipping updates via email</span>
-            </li>
-            <li className="flex items-start">
-              <svg className="w-5 h-5 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Track your order status anytime</span>
-            </li>
-          </ul>
-        </div>
-      </motion.div>
-      
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Link href="/products" className="flex-1">
-          <Button variant="primary" size="lg" className="w-full">
-            Continue Shopping
-          </Button>
-        </Link>
-        <Button variant="outline" size="lg" className="flex-1">
-          View Order Details
-        </Button>
       </div>
+    );
+  }
+
+  // Error state
+  if (error || !order) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="rounded-full bg-red-100 p-3 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4 text-gray-900">
+            {error?.includes('not found') ? 'Order Not Found' : 'Error Loading Order'}
+          </h1>
+          <p className="text-gray-600 mb-8">{error}</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button onClick={handleRetry} variant="primary">
+              Try Again
+            </Button>
+            <Link href="/">
+              <Button variant="outline">Go to Homepage</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Success state
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-5xl mx-auto">
+        {/* Confirmation Header */}
+        <OrderConfirmationHeader
+          orderNumber={order.orderNumber}
+          orderDate={order.createdAt}
+          status={order.status}
+        />
+
+        {/* Order Details and Shipping Address */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+          {/* Order Details (2 columns on desktop) */}
+          <div className="lg:col-span-2">
+            <OrderDetails items={order.items} totalAmount={order.totalAmount} />
+          </div>
+
+          {/* Shipping Address (1 column on desktop) */}
+          <div className="lg:col-span-1">
+            <ShippingAddressDisplay address={order.shippingAddress} />
+          </div>
+        </div>
+
+        {/* Actions */}
+        <OrderActions showPrintButton={true} />
+
+        {/* Print-friendly footer */}
+        <div className="mt-8 pt-8 border-t text-center text-sm text-gray-500 print:block">
+          <p>
+            Questions about your order? Contact us at{' '}
+            <a href="mailto:support@shop-assistant.com" className="text-blue-600 hover:underline">
+              support@shop-assistant.com
+            </a>
+          </p>
+        </div>
+      </div>
+
+      {/* Print Styles */}
+      <style jsx global>{`
+        @media print {
+          header,
+          footer,
+          nav,
+          .no-print {
+            display: none !important;
+          }
+
+          body {
+            color: black;
+            background: white;
+          }
+
+          .container {
+            max-width: 100%;
+            padding: 0;
+          }
+
+          button {
+            display: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }

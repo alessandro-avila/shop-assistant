@@ -72,18 +72,20 @@ export interface BackendOrderItemDto {
   productName: string;
   quantity: number;
   unitPrice: number;
-  subtotal: number;
+  lineTotal: number;
 }
 
 /**
  * Backend address DTO (matches AddressDto.cs)
  */
 export interface BackendAddressDto {
-  name: string;
-  address: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  streetAddress: string;
   city: string;
   state: string;
-  zipCode: string;
+  postalCode: string;
   country: string;
 }
 
@@ -96,8 +98,6 @@ export interface BackendOrderDto {
   totalAmount: number;
   status: string;
   shippingAddress: BackendAddressDto;
-  customerEmail: string;
-  customerName: string;
   items: BackendOrderItemDto[];
   createdAt: string;
   estimatedDelivery: string;
@@ -110,8 +110,6 @@ export interface BackendCreateOrderRequest {
   items: BackendOrderItemRequest[];
   totalAmount: number;
   shippingAddress: BackendAddressDto;
-  customerEmail: string;
-  customerName: string;
 }
 
 /**

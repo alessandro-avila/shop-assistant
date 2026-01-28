@@ -38,6 +38,9 @@ export function CardBody({ className, children, ...props }: CardProps) {
   );
 }
 
+// Alias for consistency with shadcn/ui
+export const CardContent = CardBody;
+
 export function CardFooter({ className, children, ...props }: CardProps) {
   return (
     <div

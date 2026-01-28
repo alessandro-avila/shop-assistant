@@ -15,10 +15,10 @@ public class OrderItemRequest
     public int ProductId { get; set; }
 
     /// <summary>
-    /// Quantity of the product being ordered.
+    /// Quantity of the product being ordered. Must be between 1 and 100.
     /// </summary>
     [Required]
-    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1")]
+    [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100")]
     public int Quantity { get; set; }
 
     /// <summary>

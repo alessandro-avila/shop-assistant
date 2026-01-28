@@ -1,0 +1,31 @@
+### Test 1: Get Order by ID - Success
+GET http://localhost:5250/api/orders/1
+
+### Test 2: Get Order by ID - Not Found
+GET http://localhost:5250/api/orders/99999
+
+### Test 3: Get Order by Number - Success (use actual order number from database)
+GET http://localhost:5250/api/orders/number/ORD-20260128-001
+
+### Test 4: Get Order by Number - Not Found
+GET http://localhost:5250/api/orders/number/ORD-99999999-999
+
+### Test 5: Verify Cache Headers
+# Run this and check response headers for Cache-Control
+GET http://localhost:5250/api/orders/1
+
+### Test 6: Performance Test - Multiple Requests
+# Send multiple requests and verify consistent response times < 200ms
+GET http://localhost:5250/api/orders/1
+###
+GET http://localhost:5250/api/orders/1
+###
+GET http://localhost:5250/api/orders/1
+
+### Test 7: Verify LineTotal in Response
+# Check that OrderItemDto includes lineTotal property
+GET http://localhost:5250/api/orders/1
+
+### Test 8: Verify ProblemDetails Format on Error
+# Should return ProblemDetails JSON with title, status, detail, instance
+GET http://localhost:5250/api/orders/99999

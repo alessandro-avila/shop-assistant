@@ -50,22 +50,20 @@ export async function getOrderByNumber(orderNumber: string): Promise<BackendOrde
  * 
  * @param cartItems - Items in cart
  * @param shippingAddress - Shipping address
- * @param customerEmail - Customer email
- * @param customerName - Customer name
  * @returns Order creation request object
  */
 export function buildOrderRequest(
   cartItems: Array<{ productId: number; quantity: number; unitPrice: number }>,
   shippingAddress: {
-    name: string;
-    address: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    streetAddress: string;
     city: string;
     state: string;
-    zipCode: string;
+    postalCode: string;
     country: string;
-  },
-  customerEmail: string,
-  customerName: string
+  }
 ): BackendCreateOrderRequest {
   const items: BackendOrderItemRequest[] = cartItems.map(item => ({
     productId: item.productId,
@@ -79,11 +77,13 @@ export function buildOrderRequest(
   );
   
   const addressDto: BackendAddressDto = {
-    name: shippingAddress.name,
-    address: shippingAddress.address,
+    fullName: shippingAddress.fullName,
+    email: shippingAddress.email,
+    phone: shippingAddress.phone,
+    streetAddress: shippingAddress.streetAddress,
     city: shippingAddress.city,
     state: shippingAddress.state,
-    zipCode: shippingAddress.zipCode,
+    postalCode: shippingAddress.postalCode,
     country: shippingAddress.country,
   };
   
@@ -91,7 +91,6 @@ export function buildOrderRequest(
     items,
     totalAmount,
     shippingAddress: addressDto,
-    customerEmail,
-    customerName,
   };
 }
+

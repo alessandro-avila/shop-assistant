@@ -32,21 +32,8 @@ public class CreateOrderRequest
 
     /// <summary>
     /// Shipping address for the order.
+    /// Contains customer contact info (name, email, phone) and shipping address.
     /// </summary>
     [Required]
     public required AddressDto ShippingAddress { get; set; }
-
-    /// <summary>
-    /// Customer email address.
-    /// </summary>
-    [Required]
-    [EmailAddress(ErrorMessage = "Invalid email address")]
-    public required string CustomerEmail { get; set; }
-
-    /// <summary>
-    /// Customer full name.
-    /// </summary>
-    [Required]
-    [MinLength(2, ErrorMessage = "Customer name must be at least 2 characters")]
-    public required string CustomerName { get; set; }
 }

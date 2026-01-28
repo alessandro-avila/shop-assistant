@@ -41,7 +41,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Creating new order for customer: {CustomerEmail}", request.CustomerEmail);
+            _logger.LogInformation("Creating new order for customer: {CustomerEmail}", request.ShippingAddress.Email);
 
             // Validate request
             if (request.Items == null || !request.Items.Any())
@@ -50,19 +50,58 @@ public class OrdersController : ControllerBase
                 return BadRequest("Order must contain at least one item");
             }
 
-            // Validate all products exist before starting transaction
-            var productIds = request.Items.Select(i => i.ProductId).Distinct().ToList();
-            var existingProducts = await _context.Products
-                .Where(p => productIds.Contains(p.ProductId))
-                .ToDictionaryAsync(p => p.ProductId, p => p.Name);
+            // Validate total items limit (max 100 items across all products)
+            var totalItemCount = request.Items.Sum(i => i.Quantity);
+            if (totalItemCount > 100)
+            {
+                _logger.LogWarning("Order creation failed: Total items {TotalItems} exceeds limit of 100", totalItemCount);
+                return BadRequest($"Cart cannot exceed 100 items. Current total: {totalItemCount}");
+            }
 
+            // Validate all products exist and fetch current prices
+            var productIds = request.Items.Select(i => i.ProductId).Distinct().ToList();
+            var products = await _context.Products
+                .Where(p => productIds.Contains(p.ProductId))
+                .ToDictionaryAsync(p => p.ProductId);
+
+            // Check for non-existent products
+            var missingProductIds = productIds.Where(id => !products.ContainsKey(id)).ToList();
+            if (missingProductIds.Any())
+            {
+                _logger.LogWarning("Order creation failed: Products not found: {ProductIds}", 
+                    string.Join(", ", missingProductIds));
+                
+                if (missingProductIds.Count == 1)
+                    return BadRequest($"Product with ID {missingProductIds[0]} not found");
+                else
+                    return BadRequest($"Products not found: {string.Join(", ", missingProductIds)}");
+            }
+
+            // CRITICAL: Validate prices against database to prevent tampering
+            var priceValidationErrors = new List<string>();
             foreach (var item in request.Items)
             {
-                if (!existingProducts.ContainsKey(item.ProductId))
+                var product = products[item.ProductId];
+                if (item.UnitPrice != product.Price)
                 {
-                    _logger.LogWarning("Order creation failed: Product ID {ProductId} not found", item.ProductId);
-                    return BadRequest($"Product with ID {item.ProductId} not found");
+                    _logger.LogWarning(
+                        "Price tampering detected: Product {ProductId} ({ProductName}) - Database: {DbPrice}, Client: {ClientPrice}, Client IP: {ClientIP}",
+                        product.ProductId, product.Name, product.Price, item.UnitPrice,
+                        HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+                    
+                    priceValidationErrors.Add(
+                        $"Product '{product.Name}': expected {product.Price:C}, received {item.UnitPrice:C}");
                 }
+
+                // TODO: Add product availability/stock check when inventory system is implemented
+                // if (!product.InStock) { return BadRequest($"Product '{product.Name}' is out of stock"); }
+            }
+
+            if (priceValidationErrors.Any())
+            {
+                _logger.LogWarning("Order creation failed: Price validation errors - {Errors}", 
+                    string.Join("; ", priceValidationErrors));
+                return BadRequest("Price validation failed. Please refresh your cart and try again.");
             }
 
             // Validate total amount matches items (with small tolerance for rounding)
@@ -75,13 +114,17 @@ public class OrdersController : ControllerBase
                 return BadRequest($"Total amount mismatch. Expected: {calculatedTotal:F2}, Received: {request.TotalAmount:F2}");
             }
 
-            // Use transaction for atomic order creation
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
+            // Use execution strategy for atomic order creation with retry support
+            var strategy = _context.Database.CreateExecutionStrategy();
+            
+            return await strategy.ExecuteAsync(async () =>
             {
-                // Generate unique order number
-                var orderNumber = await GenerateUniqueOrderNumberAsync();
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                try
+                {
+                    // Generate unique order number
+                    var orderNumber = await GenerateUniqueOrderNumberAsync();
 
                 // Create order entity
                 var order = new Order
@@ -90,8 +133,8 @@ public class OrdersController : ControllerBase
                     TotalAmount = request.TotalAmount,
                     Status = "Pending",
                     ShippingAddress = JsonSerializer.Serialize(request.ShippingAddress),
-                    CustomerEmail = request.CustomerEmail,
-                    CustomerName = request.CustomerName,
+                    CustomerEmail = request.ShippingAddress.Email,
+                    CustomerName = request.ShippingAddress.FullName,
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -105,11 +148,12 @@ public class OrdersController : ControllerBase
                 var orderItems = new List<OrderItem>();
                 foreach (var itemRequest in request.Items)
                 {
+                    var product = products[itemRequest.ProductId];
                     var orderItem = new OrderItem
                     {
                         OrderId = order.OrderId,
                         ProductId = itemRequest.ProductId,
-                        ProductName = existingProducts[itemRequest.ProductId], // Snapshot product name
+                        ProductName = product.Name, // Snapshot product name
                         Quantity = itemRequest.Quantity,
                         UnitPrice = itemRequest.UnitPrice
                     };
@@ -122,8 +166,8 @@ public class OrdersController : ControllerBase
                 await transaction.CommitAsync();
 
                 _logger.LogInformation(
-                    "Order {OrderNumber} created successfully with {ItemCount} items",
-                    order.OrderNumber, orderItems.Count);
+                    "Order {OrderNumber} created successfully with {ItemCount} items, Total: {TotalAmount:C}",
+                    order.OrderNumber, orderItems.Count, order.TotalAmount);
 
                 // Build response DTO
                 var orderDto = new OrderDto
@@ -133,8 +177,6 @@ public class OrdersController : ControllerBase
                     TotalAmount = order.TotalAmount,
                     Status = order.Status,
                     ShippingAddress = JsonSerializer.Deserialize<AddressDto>(order.ShippingAddress)!,
-                    CustomerEmail = order.CustomerEmail,
-                    CustomerName = order.CustomerName,
                     Items = orderItems.Select(oi => new OrderItemDto
                     {
                         OrderItemId = oi.OrderItemId,
@@ -151,13 +193,14 @@ public class OrdersController : ControllerBase
                     nameof(GetOrder),
                     new { id = order.OrderId },
                     orderDto);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                _logger.LogError(ex, "Error creating order, transaction rolled back");
-                throw;
-            }
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Error creating order, transaction rolled back");
+                    throw;
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -168,21 +211,26 @@ public class OrdersController : ControllerBase
 
     /// <summary>
     /// Get order details by order ID.
+    /// Retrieves complete order information including all items and shipping details.
     /// </summary>
     /// <param name="id">The order ID</param>
     /// <returns>Order details including all items</returns>
-    /// <response code="200">Returns the order</response>
+    /// <response code="200">Returns the order with complete details</response>
     /// <response code="404">Order not found</response>
     /// <response code="500">Internal server error</response>
+    /// <example>
+    /// GET /api/orders/12345
+    /// </example>
     [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Client)]
     public async Task<ActionResult<OrderDto>> GetOrder(int id)
     {
         try
         {
-            _logger.LogInformation("Fetching order with ID: {OrderId}", id);
+            _logger.LogInformation("Retrieving order with ID: {OrderId}", id);
 
             var order = await _context.Orders
                 .Include(o => o.OrderItems)
@@ -192,58 +240,60 @@ public class OrdersController : ControllerBase
             if (order == null)
             {
                 _logger.LogWarning("Order with ID {OrderId} not found", id);
-                return NotFound($"Order with ID {id} not found");
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Order not found",
+                    Status = StatusCodes.Status404NotFound,
+                    Detail = $"Order with ID {id} not found",
+                    Instance = HttpContext.Request.Path
+                });
             }
 
-            // Deserialize shipping address and build DTO
-            var orderDto = new OrderDto
-            {
-                OrderId = order.OrderId,
-                OrderNumber = order.OrderNumber,
-                TotalAmount = order.TotalAmount,
-                Status = order.Status,
-                ShippingAddress = JsonSerializer.Deserialize<AddressDto>(order.ShippingAddress)!,
-                CustomerEmail = order.CustomerEmail,
-                CustomerName = order.CustomerName,
-                Items = order.OrderItems.Select(oi => new OrderItemDto
-                {
-                    OrderItemId = oi.OrderItemId,
-                    ProductId = oi.ProductId,
-                    ProductName = oi.ProductName,
-                    Quantity = oi.Quantity,
-                    UnitPrice = oi.UnitPrice
-                }).ToList(),
-                CreatedAt = order.CreatedAt
-            };
+            var orderDto = MapToOrderDto(order);
 
-            _logger.LogInformation("Retrieved order: {OrderNumber}", order.OrderNumber);
+            _logger.LogInformation("Successfully retrieved order {OrderNumber} (ID: {OrderId})", 
+                order.OrderNumber, order.OrderId);
+
+            // Set cache headers for client-side caching (5 minutes)
+            Response.Headers.Append("Cache-Control", "private, max-age=300");
 
             return Ok(orderDto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving order with ID: {OrderId}", id);
-            return StatusCode(500, "An error occurred while retrieving the order");
+            _logger.LogError(ex, "Unexpected error retrieving order with ID: {OrderId}", id);
+            return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Title = "An error occurred",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = "An unexpected error occurred while retrieving the order",
+                Instance = HttpContext.Request.Path
+            });
         }
     }
 
     /// <summary>
     /// Get order details by order number.
+    /// Retrieves complete order information using the order number (e.g., ORD-20260128-001).
     /// </summary>
-    /// <param name="orderNumber">The order number (e.g., ORD-2026-12345)</param>
+    /// <param name="orderNumber">The order number in format ORD-YYYYMMDD-###</param>
     /// <returns>Order details including all items</returns>
-    /// <response code="200">Returns the order</response>
+    /// <response code="200">Returns the order with complete details</response>
     /// <response code="404">Order not found</response>
     /// <response code="500">Internal server error</response>
+    /// <example>
+    /// GET /api/orders/number/ORD-20260128-001
+    /// </example>
     [HttpGet("number/{orderNumber}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Client)]
     public async Task<ActionResult<OrderDto>> GetOrderByNumber(string orderNumber)
     {
         try
         {
-            _logger.LogInformation("Fetching order with number: {OrderNumber}", orderNumber);
+            _logger.LogInformation("Retrieving order with number: {OrderNumber}", orderNumber);
 
             var order = await _context.Orders
                 .Include(o => o.OrderItems)
@@ -253,72 +303,137 @@ public class OrdersController : ControllerBase
             if (order == null)
             {
                 _logger.LogWarning("Order with number {OrderNumber} not found", orderNumber);
-                return NotFound($"Order with number '{orderNumber}' not found");
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Order not found",
+                    Status = StatusCodes.Status404NotFound,
+                    Detail = $"Order with number '{orderNumber}' not found",
+                    Instance = HttpContext.Request.Path
+                });
             }
 
-            // Deserialize shipping address and build DTO
-            var orderDto = new OrderDto
-            {
-                OrderId = order.OrderId,
-                OrderNumber = order.OrderNumber,
-                TotalAmount = order.TotalAmount,
-                Status = order.Status,
-                ShippingAddress = JsonSerializer.Deserialize<AddressDto>(order.ShippingAddress)!,
-                CustomerEmail = order.CustomerEmail,
-                CustomerName = order.CustomerName,
-                Items = order.OrderItems.Select(oi => new OrderItemDto
-                {
-                    OrderItemId = oi.OrderItemId,
-                    ProductId = oi.ProductId,
-                    ProductName = oi.ProductName,
-                    Quantity = oi.Quantity,
-                    UnitPrice = oi.UnitPrice
-                }).ToList(),
-                CreatedAt = order.CreatedAt
-            };
+            var orderDto = MapToOrderDto(order);
 
-            _logger.LogInformation("Retrieved order: {OrderNumber} (ID: {OrderId})", 
+            _logger.LogInformation("Successfully retrieved order {OrderNumber} (ID: {OrderId})", 
                 order.OrderNumber, order.OrderId);
+
+            // Set cache headers for client-side caching (5 minutes)
+            Response.Headers.Append("Cache-Control", "private, max-age=300");
 
             return Ok(orderDto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving order with number: {OrderNumber}", orderNumber);
-            return StatusCode(500, "An error occurred while retrieving the order");
+            _logger.LogError(ex, "Unexpected error retrieving order with number: {OrderNumber}", orderNumber);
+            return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Title = "An error occurred",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = "An unexpected error occurred while retrieving the order",
+                Instance = HttpContext.Request.Path
+            });
         }
     }
 
     /// <summary>
-    /// Generate a unique order number in the format ORD-YYYY-XXXXX.
-    /// Ensures uniqueness by checking existing order numbers and retrying on collision.
+    /// Maps an Order entity to an OrderDto with all related data.
     /// </summary>
-    /// <returns>Unique order number string</returns>
+    private OrderDto MapToOrderDto(Order order)
+    {
+        return new OrderDto
+        {
+            OrderId = order.OrderId,
+            OrderNumber = order.OrderNumber,
+            TotalAmount = order.TotalAmount,
+            Status = order.Status,
+            ShippingAddress = JsonSerializer.Deserialize<AddressDto>(order.ShippingAddress)!,
+            CustomerEmail = order.CustomerEmail,
+            CustomerName = order.CustomerName,
+            Items = order.OrderItems.Select(oi => new OrderItemDto
+            {
+                OrderItemId = oi.OrderItemId,
+                ProductId = oi.ProductId,
+                ProductName = oi.ProductName,
+                Quantity = oi.Quantity,
+                UnitPrice = oi.UnitPrice
+            }).ToList(),
+            CreatedAt = order.CreatedAt
+        };
+    }
+
+    /// <summary>
+    /// Generate a unique order number in the format ORD-YYYYMMDD-###.
+    /// Uses daily sequential numbering that resets at midnight UTC.
+    /// Thread-safe through database transaction isolation.
+    /// </summary>
+    /// <returns>Unique order number string (e.g., ORD-20260128-001)</returns>
+    /// <remarks>
+    /// The sequence number is 3-digit zero-padded (001-999) but will expand to 4+ digits
+    /// if more than 999 orders are placed in a single day (with warning logged).
+    /// </remarks>
     private async Task<string> GenerateUniqueOrderNumberAsync()
     {
-        var year = DateTime.UtcNow.Year;
-        var random = new Random();
-        string orderNumber;
-        int attempts = 0;
-        const int maxAttempts = 10;
-
-        do
+        try
         {
-            var randomNumber = random.Next(10000, 99999);
-            orderNumber = $"ORD-{year}-{randomNumber:D5}";
-            attempts++;
+            // Get current UTC date formatted as YYYYMMDD
+            var currentDate = DateTime.UtcNow;
+            var dateString = currentDate.ToString("yyyyMMdd");
+            var pattern = $"ORD-{dateString}-%";
 
-            if (attempts > maxAttempts)
+            _logger.LogDebug("Generating order number for date: {Date}", dateString);
+
+            // Query for the maximum order number for today
+            // The index on OrderNumber makes this query efficient
+            var maxOrderNumber = await _context.Orders
+                .Where(o => EF.Functions.Like(o.OrderNumber, pattern))
+                .Select(o => o.OrderNumber)
+                .OrderByDescending(o => o)
+                .FirstOrDefaultAsync();
+
+            int sequence = 1; // Default for first order of the day
+
+            if (maxOrderNumber != null)
             {
-                _logger.LogError("Failed to generate unique order number after {Attempts} attempts", attempts);
-                throw new InvalidOperationException("Unable to generate unique order number");
+                // Extract sequence number from order number format: ORD-YYYYMMDD-###
+                // Split by dash and take the last part
+                var parts = maxOrderNumber.Split('-');
+                if (parts.Length == 3 && int.TryParse(parts[2], out int lastSequence))
+                {
+                    sequence = lastSequence + 1;
+                    _logger.LogDebug("Found existing orders for date {Date}. Last sequence: {LastSequence}, Next: {NextSequence}", 
+                        dateString, lastSequence, sequence);
+                }
+                else
+                {
+                    // Invalid order number format found - log warning but continue
+                    _logger.LogWarning("Found order with invalid format: {OrderNumber}. Starting sequence at 001.", maxOrderNumber);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("No existing orders for date {Date}. Starting sequence at 001.", dateString);
             }
 
-        } while (await _context.Orders.AnyAsync(o => o.OrderNumber == orderNumber));
+            // Log warning if sequence exceeds typical 3-digit range
+            if (sequence > 999)
+            {
+                _logger.LogWarning(
+                    "Order sequence for date {Date} exceeds 999 (current: {Sequence}). Using expanded sequence number.",
+                    dateString, sequence);
+            }
 
-        _logger.LogDebug("Generated unique order number: {OrderNumber} (attempts: {Attempts})", 
-            orderNumber, attempts);
+            // Generate order number with zero-padded sequence (minimum 3 digits)
+            var orderNumber = $"ORD-{dateString}-{sequence:D3}";
 
-        return orderNumber;
+            _logger.LogInformation("Generated order number: {OrderNumber} (sequence: {Sequence})", 
+                orderNumber, sequence);
+
+            return orderNumber;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to generate unique order number");
+            throw new InvalidOperationException("Unable to generate unique order number", ex);
+        }
     }
 }

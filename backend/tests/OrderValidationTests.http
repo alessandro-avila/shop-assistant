@@ -1,0 +1,273 @@
+### Test 1: Valid Order Creation
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 2,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 599.98,
+  "shippingAddress": {
+    "fullName": "John Doe",
+    "email": "john.doe@example.com",
+    "phone": "555-123-4567",
+    "streetAddress": "123 Main Street",
+    "city": "Seattle",
+    "state": "WA",
+    "postalCode": "98101",
+    "country": "USA"
+  },
+  "customerEmail": "john.doe@example.com",
+  "customerName": "John Doe"
+}
+
+### Test 2: Price Tampering Detection - Wrong Price
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 1,
+      "unitPrice": 1.00
+    }
+  ],
+  "totalAmount": 1.00,
+  "shippingAddress": {
+    "fullName": "Jane Smith",
+    "email": "jane@example.com",
+    "phone": "555-987-6543",
+    "streetAddress": "456 Oak Ave",
+    "city": "Portland",
+    "state": "OR",
+    "postalCode": "97201",
+    "country": "USA"
+  },
+  "customerEmail": "jane@example.com",
+  "customerName": "Jane Smith"
+}
+
+### Test 3: Quantity Zero
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 0,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 0,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "test@example.com",
+    "phone": "555-000-0000",
+    "streetAddress": "789 Test St",
+    "city": "Test City",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}
+
+### Test 4: Quantity Exceeds 100
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 101,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 30299.00,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "test@example.com",
+    "phone": "555-000-0000",
+    "streetAddress": "789 Test St",
+    "city": "Test City",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}
+
+### Test 5: Total Items Exceeds 100
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 50,
+      "unitPrice": 299.99
+    },
+    {
+      "productId": 2,
+      "quantity": 51,
+      "unitPrice": 199.99
+    }
+  ],
+  "totalAmount": 25199.49,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "test@example.com",
+    "phone": "555-000-0000",
+    "streetAddress": "789 Test St",
+    "city": "Test City",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}
+
+### Test 6: Invalid Email Format
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 1,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 299.99,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "not-an-email",
+    "phone": "555-000-0000",
+    "streetAddress": "789 Test St",
+    "city": "Test City",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "not-an-email",
+  "customerName": "Test User"
+}
+
+### Test 7: Missing Required Field (City)
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 1,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 299.99,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "test@example.com",
+    "phone": "555-000-0000",
+    "streetAddress": "789 Test St",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}
+
+### Test 8: Phone Too Short
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 1,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 299.99,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "test@example.com",
+    "phone": "123",
+    "streetAddress": "789 Test St",
+    "city": "Test City",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}
+
+### Test 9: Non-Existent Product
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 99999,
+      "quantity": 1,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 299.99,
+  "shippingAddress": {
+    "fullName": "Test User",
+    "email": "test@example.com",
+    "phone": "555-000-0000",
+    "streetAddress": "789 Test St",
+    "city": "Test City",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}
+
+### Test 10: String Length Violation (FullName > 200 chars)
+POST http://localhost:5250/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 1,
+      "unitPrice": 299.99
+    }
+  ],
+  "totalAmount": 299.99,
+  "shippingAddress": {
+    "fullName": "ThisIsAnExtremelyLongNameThatExceedsTheTwoHundredCharacterLimitAndShouldBeRejectedByTheValidationLogicBecauseItIsTooLongForOurDatabaseFieldAndWouldCauseProblemsInProductionSystemsWhereDataIntegrityIsImportantSoWeNeedToValidateItProperly",
+    "email": "test@example.com",
+    "phone": "555-000-0000",
+    "streetAddress": "789 Test St",
+    "city": "Test City",
+    "state": "TC",
+    "postalCode": "12345",
+    "country": "USA"
+  },
+  "customerEmail": "test@example.com",
+  "customerName": "Test User"
+}

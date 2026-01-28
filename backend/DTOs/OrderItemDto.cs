@@ -31,7 +31,7 @@ public class OrderItemDto
     public decimal UnitPrice { get; set; }
 
     /// <summary>
-    /// Subtotal for this item (Quantity * UnitPrice).
+    /// Line total for this item (Quantity × UnitPrice).
     /// </summary>
-    public decimal Subtotal => Quantity * UnitPrice;
+    public decimal LineTotal => Quantity * UnitPrice;
 }
