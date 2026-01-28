@@ -1,0 +1,5 @@
+name: shop-assistant
+version: 1.0.0
+dependencies:
+  apm:
+    - danielmeppiel/azure-standards@latest
