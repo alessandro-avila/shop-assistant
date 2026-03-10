@@ -7,7 +7,7 @@
 
 ## Assumptions
 
-- The frontend product IDs (currently strings like `"elec-001"`) will be resolved to backend integer product IDs by looking up each product by its slug via the existing products API at checkout time. This ensures the order always references current, valid backend product IDs.
+- The frontend product IDs (strings representing backend integer PKs, e.g., `"42"`) will be resolved to backend integer product IDs using `parseInt(product.id)` at checkout time. The existing data pipeline (`mapBackendProduct`) already stores the backend integer PK as the frontend `product.id` string. No slug-based API lookup is needed. *(Updated per research decision R-001.)*
 - Payment processing is out of scope. The existing payment form fields remain as UI placeholders only; no real payment gateway integration is included in this feature.
 - Tax calculation (currently hardcoded at 10%) and shipping cost logic remain as-is. Future features may introduce dynamic tax/shipping calculations.
 - The "estimated delivery" shown on the confirmation page will be calculated client-side (e.g., order date + 7 days for standard shipping) rather than being returned by the backend.
@@ -18,7 +18,7 @@
 ### Session 2026-03-10
 
 - Q: What should the `TotalAmount` field persisted on the Order represent — items subtotal only, or grand total including tax and shipping? → A: Items subtotal only (sum of quantity × unit price for all line items). Tax and shipping remain frontend display values and are not persisted on the Order.
-- Q: How should frontend string product IDs be resolved to backend integer IDs? → A: Lookup by slug at checkout time — call the products API to resolve each slug to an integer ID before submitting the order.
+- Q: How should frontend string product IDs be resolved to backend integer IDs? → A: Use `parseInt(product.id)` at checkout time. Research (R-001) confirmed that `product.id` is already the backend integer PK stored as a string via the `mapBackendProduct` mapper, so no API lookup is needed. *(Updated from original slug-lookup answer based on codebase analysis.)*
 - Q: Should error messages expose backend details or show only generic messages? → A: Categorized messages — map backend error types to user-friendly messages that describe the problem category (e.g., "A product in your cart is no longer available", "Prices have changed, please review your cart") without exposing raw backend internals.
 - Q: Should the confirmation page always fetch from the backend, or use the in-memory order response when available? → A: Use in-memory response when available for instant display after placement; fetch from backend on refresh or direct navigation as fallback.
 - Q: Should the system validate checkout form fields client-side before submitting to the backend? → A: Yes — validate required fields (name, email format, address completeness) on the client side before submitting, showing inline validation errors. Backend validation remains as a safety net.
@@ -77,7 +77,7 @@ Today, the success page only shows the order number from the URL parameter and s
 1. **Given** a user has just placed an order, **When** they are redirected to the confirmation page, **Then** the page immediately displays the order details from the in-memory order response (order number, ordered items with names, quantities, prices, total amount, and shipping address) without an additional loading state.
 2. **Given** a user is on the confirmation page, **When** the page is refreshed or accessed via a direct/bookmarked URL, **Then** the page fetches order details from the backend by order number and displays a loading indicator until the data is ready.
 3. **Given** a user navigates directly to the confirmation page with an invalid or nonexistent order number, **When** the backend returns a 404 error, **Then** the page displays a message indicating the order was not found and provides a link to continue shopping.
-4. **Given** a user is on the confirmation page, **When** they click "View Order Details", **Then** the button navigates to a view showing the complete order information (this may be the same page or a dedicated order details route).
+4. **Given** a user is on the confirmation page, **When** the page finishes loading, **Then** all order details (order number, items with names/quantities/prices, total amount, and shipping address) are displayed directly on the confirmation page — no separate navigation or "View Order Details" action is required. *(The confirmation page itself serves as the order details view.)*
 
 ---
 
@@ -114,7 +114,7 @@ Today, the cart is managed entirely in the browser's local storage. This story i
 ### Functional Requirements
 
 - **FR-001**: System MUST submit order data (items, quantities, unit prices, shipping address, customer info) to the backend order creation endpoint when the user clicks "Place Order".
-- **FR-002**: System MUST resolve frontend product identifiers (slugs) to backend product identifiers (integers) by querying the products API by slug at checkout time, before submitting the order, ensuring each item references a valid backend product.
+- **FR-002**: System MUST resolve frontend product identifiers (strings) to backend product identifiers (integers) using `parseInt(product.id)` at checkout time, before submitting the order, ensuring each item references a valid backend product ID. *(Clarified: product.id is already the backend integer PK stored as a string — no slug-based API lookup is needed. See research decision R-001.)*
 - **FR-003**: System MUST include the unit price from the product catalog for each line item in the order request.
 - **FR-004**: System MUST calculate the order total as the sum of (quantity × unit price) for all line items — excluding tax and shipping — and this total MUST match the backend's expected total within a rounding tolerance. Tax and shipping are displayed on the frontend only and are not included in the persisted `TotalAmount`.
 - **FR-005**: System MUST clear the shopping cart only after receiving a successful order creation response from the backend.

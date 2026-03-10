@@ -30,7 +30,7 @@ Wire the existing frontend checkout page to the backend Orders API so that place
 | I | Code Quality & Consistency | ✅ PASS | New utility files follow existing patterns. `cn()` used for conditional classes. No `any` types. Functions < 50 lines. |
 | II | Backend Architecture Discipline | ✅ PASS (N/A) | Zero backend changes. Existing `OrdersController` already uses transactions and validates data. |
 | III | Frontend Architecture Discipline | ⚠️ VIOLATION → RESOLVED | `orders.ts` currently lacks mock fallback. **Step 1 of quickstart adds it.** After implementation: PASS. |
-| IV | Testing Standards | ⚠️ DEFERRED | No test infrastructure exists yet. Tests tracked as separate follow-up. Feature scope is wiring only. |
+| IV | Testing Standards | ⚠️ CONSTITUTION EXCEPTION | CONSTITUTION EXCEPTION: IV — No test infrastructure (xUnit, RTL, Playwright) exists in this project yet. Adding test scaffolding is out of scope for this wiring feature. Tracked as mandatory follow-up before any subsequent feature ships. Exception expires when test projects are created. |
 | V | API Design Contract | ✅ PASS (N/A) | No endpoint changes. Existing contract documented in `contracts/order-api.md`. |
 | VI | Data Integrity & Safety | ✅ PASS (N/A) | Backend validation unchanged. `decimal(18,2)` for money. FK constraints configured. Transactions wrap order creation. |
 | VII | Performance by Default | ✅ PASS | `Promise.all` for cart product loading (existing). `sessionStorage` avoids redundant API call on confirmation. |

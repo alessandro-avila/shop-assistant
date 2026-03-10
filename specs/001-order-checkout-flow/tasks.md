@@ -3,6 +3,11 @@
 **Input**: Design documents from `/specs/001-order-checkout-flow/`
 **Prerequisites**: plan.md ✅, spec.md ✅, research.md ✅, data-model.md ✅, contracts/order-api.md ✅, quickstart.md ✅
 
+> **CONSTITUTION EXCEPTION: Principle IV (Testing Standards)** — No test tasks are included because
+> the project has zero test infrastructure. A follow-up feature increment MUST create test projects
+> (`ShopAssistant.Api.Tests`, frontend `*.test.ts` convention) and retroactively cover this feature
+> before the next feature ships.
+
 **Tests**: Not requested. No test infrastructure exists yet (Constitution Principle IV, deferred).
 
 **Organization**: Tasks grouped by user story. US1 (P1), US2 (P2), US3 (P2) are in scope. US4 (P3) is deferred (requires backend changes outside current scope).
