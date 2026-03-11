@@ -103,13 +103,9 @@ export async function createOrder(orderData: BackendCreateOrderRequest): Promise
     return buildMockOrder(orderData);
   }
 
-  try {
-    return await post<BackendOrderDto>('/orders', orderData);
-  } catch (error) {
-    console.warn('%c⚠️ FALLBACK MODE', 'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold', 'Failed to create order via API, using mock:', error);
-    await delay(MOCK_API_DELAY);
-    return buildMockOrder(orderData);
-  }
+  // No silent fallback for write operations — errors must propagate
+  // so the checkout page can display them to the user.
+  return await post<BackendOrderDto>('/orders', orderData);
 }
 
 /**

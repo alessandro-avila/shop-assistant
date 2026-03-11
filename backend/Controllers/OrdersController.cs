@@ -75,89 +75,94 @@ public class OrdersController : ControllerBase
                 return BadRequest($"Total amount mismatch. Expected: {calculatedTotal:F2}, Received: {request.TotalAmount:F2}");
             }
 
-            // Use transaction for atomic order creation
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            // Use execution strategy to wrap the transaction (required by SqlServerRetryingExecutionStrategy)
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            try
+            var orderDto = await strategy.ExecuteAsync(async () =>
             {
-                // Generate unique order number
-                var orderNumber = await GenerateUniqueOrderNumberAsync();
+                using var transaction = await _context.Database.BeginTransactionAsync();
 
-                // Create order entity
-                var order = new Order
+                try
                 {
-                    OrderNumber = orderNumber,
-                    TotalAmount = request.TotalAmount,
-                    Status = "Pending",
-                    ShippingAddress = JsonSerializer.Serialize(request.ShippingAddress),
-                    CustomerEmail = request.CustomerEmail,
-                    CustomerName = request.CustomerName,
-                    CreatedAt = DateTime.UtcNow
-                };
+                    // Generate unique order number
+                    var orderNumber = await GenerateUniqueOrderNumberAsync();
 
-                _context.Orders.Add(order);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Order created with ID: {OrderId}, Number: {OrderNumber}", 
-                    order.OrderId, order.OrderNumber);
-
-                // Create order items
-                var orderItems = new List<OrderItem>();
-                foreach (var itemRequest in request.Items)
-                {
-                    var orderItem = new OrderItem
+                    // Create order entity
+                    var order = new Order
                     {
-                        OrderId = order.OrderId,
-                        ProductId = itemRequest.ProductId,
-                        ProductName = existingProducts[itemRequest.ProductId], // Snapshot product name
-                        Quantity = itemRequest.Quantity,
-                        UnitPrice = itemRequest.UnitPrice
+                        OrderNumber = orderNumber,
+                        TotalAmount = request.TotalAmount,
+                        Status = "Pending",
+                        ShippingAddress = JsonSerializer.Serialize(request.ShippingAddress),
+                        CustomerEmail = request.CustomerEmail,
+                        CustomerName = request.CustomerName,
+                        CreatedAt = DateTime.UtcNow
                     };
 
-                    orderItems.Add(orderItem);
-                    _context.OrderItems.Add(orderItem);
-                }
+                    _context.Orders.Add(order);
+                    await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                    _logger.LogInformation("Order created with ID: {OrderId}, Number: {OrderNumber}", 
+                        order.OrderId, order.OrderNumber);
 
-                _logger.LogInformation(
-                    "Order {OrderNumber} created successfully with {ItemCount} items",
-                    order.OrderNumber, orderItems.Count);
-
-                // Build response DTO
-                var orderDto = new OrderDto
-                {
-                    OrderId = order.OrderId,
-                    OrderNumber = order.OrderNumber,
-                    TotalAmount = order.TotalAmount,
-                    Status = order.Status,
-                    ShippingAddress = JsonSerializer.Deserialize<AddressDto>(order.ShippingAddress)!,
-                    CustomerEmail = order.CustomerEmail,
-                    CustomerName = order.CustomerName,
-                    Items = orderItems.Select(oi => new OrderItemDto
+                    // Create order items
+                    var orderItems = new List<OrderItem>();
+                    foreach (var itemRequest in request.Items)
                     {
-                        OrderItemId = oi.OrderItemId,
-                        ProductId = oi.ProductId,
-                        ProductName = oi.ProductName,
-                        Quantity = oi.Quantity,
-                        UnitPrice = oi.UnitPrice
-                    }).ToList(),
-                    CreatedAt = order.CreatedAt
-                };
+                        var orderItem = new OrderItem
+                        {
+                            OrderId = order.OrderId,
+                            ProductId = itemRequest.ProductId,
+                            ProductName = existingProducts[itemRequest.ProductId], // Snapshot product name
+                            Quantity = itemRequest.Quantity,
+                            UnitPrice = itemRequest.UnitPrice
+                        };
 
-                // Return 201 Created with Location header
-                return CreatedAtAction(
-                    nameof(GetOrder),
-                    new { id = order.OrderId },
-                    orderDto);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                _logger.LogError(ex, "Error creating order, transaction rolled back");
-                throw;
-            }
+                        orderItems.Add(orderItem);
+                        _context.OrderItems.Add(orderItem);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    _logger.LogInformation(
+                        "Order {OrderNumber} created successfully with {ItemCount} items",
+                        order.OrderNumber, orderItems.Count);
+
+                    // Build response DTO
+                    return new OrderDto
+                    {
+                        OrderId = order.OrderId,
+                        OrderNumber = order.OrderNumber,
+                        TotalAmount = order.TotalAmount,
+                        Status = order.Status,
+                        ShippingAddress = JsonSerializer.Deserialize<AddressDto>(order.ShippingAddress)!,
+                        CustomerEmail = order.CustomerEmail,
+                        CustomerName = order.CustomerName,
+                        Items = orderItems.Select(oi => new OrderItemDto
+                        {
+                            OrderItemId = oi.OrderItemId,
+                            ProductId = oi.ProductId,
+                            ProductName = oi.ProductName,
+                            Quantity = oi.Quantity,
+                            UnitPrice = oi.UnitPrice
+                        }).ToList(),
+                        CreatedAt = order.CreatedAt
+                    };
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Error creating order, transaction rolled back");
+                    throw;
+                }
+            });
+
+            // Return 201 Created with Location header
+            return CreatedAtAction(
+                nameof(GetOrder),
+                new { id = orderDto.OrderId },
+                orderDto);
         }
         catch (Exception ex)
         {
