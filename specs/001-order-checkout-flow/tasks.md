@@ -34,9 +34,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T001 [P] Add mock data fallback pattern (USE_API check, MOCK_API_DELAY, delay helper, try/catch with console.warn fallback) to createOrder, getOrderById, and getOrderByNumber functions following the existing pattern in products.ts in frontend/lib/api/orders.ts
-- [ ] T002 [P] Create error categorization utility with mapOrderError(error: unknown) function that maps ApiError status codes and message content to user-friendly {title, message} objects covering 400/not-found, 400/mismatch, 400/other, 500, and network/timeout cases in frontend/lib/utils/order-errors.ts
-- [ ] T003 [P] Create form validation utility with validateShippingInfo function (validates firstName, lastName, email format, address, city, state, zipCode, country) returning Record<string, string> of field errors, and hasErrors helper function in frontend/lib/utils/checkout-validation.ts
+- [X] T001 [P] Add mock data fallback pattern (USE_API check, MOCK_API_DELAY, delay helper, try/catch with console.warn fallback) to createOrder, getOrderById, and getOrderByNumber functions following the existing pattern in products.ts in frontend/lib/api/orders.ts
+- [X] T002 [P] Create error categorization utility with mapOrderError(error: unknown) function that maps ApiError status codes and message content to user-friendly {title, message} objects covering 400/not-found, 400/mismatch, 400/other, 500, and network/timeout cases in frontend/lib/utils/order-errors.ts
+- [X] T003 [P] Create form validation utility with validateShippingInfo function (validates firstName, lastName, email format, address, city, state, zipCode, country) returning Record<string, string> of field errors, and hasErrors helper function in frontend/lib/utils/checkout-validation.ts
 
 **Checkpoint**: All three utility components ready. Mock fallback enables frontend-only development. Error mapping and validation utilities ready for checkout integration.
 
@@ -50,8 +50,8 @@
 
 **Functional Requirements**: FR-001 (submit order data), FR-002/FR-003 (product ID resolution via parseInt, unit prices), FR-004 (total calculation via buildOrderRequest), FR-005 (clear cart after success only), FR-006 (redirect with real order number), FR-007 (loading/disabled state — existing isProcessing), FR-010 (re-enable button after error), FR-016 (client-side validation).
 
-- [ ] T004 [US1] Replace handlePlaceOrder mock implementation with real createOrder API call including: import createOrder/buildOrderRequest/mapOrderError/validateShippingInfo, add orderError and validationErrors state variables, validate shipping info before submission, map cart items to order items with parseInt(product.id) for productId and product.price for unitPrice, call buildOrderRequest and createOrder, cache response in sessionStorage as 'lastOrder', call clearCart on success, router.push to /checkout/success with real orderNumber, catch errors with mapOrderError, and re-enable button in finally block in frontend/app/checkout/page.tsx
-- [ ] T005 [US1] Pass validationErrors state to each shipping form Input component via the existing error prop (firstName, lastName, email, address, city, state, zipCode, country fields) and clear validationErrors when validation passes in frontend/app/checkout/page.tsx
+- [X] T004 [US1] Replace handlePlaceOrder mock implementation with real createOrder API call including: import createOrder/buildOrderRequest/mapOrderError/validateShippingInfo, add orderError and validationErrors state variables, validate shipping info before submission, map cart items to order items with parseInt(product.id) for productId and product.price for unitPrice, call buildOrderRequest and createOrder, cache response in sessionStorage as 'lastOrder', call clearCart on success, router.push to /checkout/success with real orderNumber, catch errors with mapOrderError, and re-enable button in finally block in frontend/app/checkout/page.tsx
+- [X] T005 [US1] Pass validationErrors state to each shipping form Input component via the existing error prop (firstName, lastName, email, address, city, state, zipCode, country fields) and clear validationErrors when validation passes in frontend/app/checkout/page.tsx
 
 **Checkpoint**: Core order submission works end-to-end. Form validation prevents invalid submissions. Cart clears only on success. Real order number in redirect URL. Button disabled during processing, re-enabled on completion/error.
 
@@ -65,7 +65,7 @@
 
 **Functional Requirements**: FR-008 (categorized validation errors), FR-009 (connectivity error message), FR-010 (re-enable button for retry).
 
-- [ ] T006 [US2] Add order error notification display — a red-bordered alert box showing orderError.title and orderError.message from the orderError state variable — in the payment/review step of the checkout form, positioned above the Place Order button in frontend/app/checkout/page.tsx
+- [X] T006 [US2] Add order error notification display — a red-bordered alert box showing orderError.title and orderError.message from the orderError state variable — in the payment/review step of the checkout form, positioned above the Place Order button in frontend/app/checkout/page.tsx
 
 **Checkpoint**: All error categories (product-not-found, price-mismatch, generic-400, server-500, network/timeout) display user-friendly messages. Cart preserved on all error types. Submit button re-enables after error for retry.
 
@@ -79,9 +79,9 @@
 
 **Functional Requirements**: FR-011 (real order details with dual-source), FR-012 (loading state on fetch), FR-013 (not-found handling).
 
-- [ ] T007 [US3] Implement dual-source order data fetching in useEffect: read orderNumber from searchParams, check sessionStorage for 'lastOrder' key (if found and matching orderNumber, parse as BackendOrderDto, remove entry, set order state — no loading), else set isLoading true and call getOrderByNumber(orderNumber) with error handling, managing order/isLoading/error states in frontend/app/checkout/success/page.tsx
-- [ ] T008 [US3] Replace static confirmation content with real order details display: order number from order.orderNumber, estimated delivery from order.estimatedDelivery, items list mapping order.items to show productName, quantity, unitPrice, and subtotal per item, order totalAmount, and parsed shippingAddress fields (name, address, city, state, zipCode, country) in frontend/app/checkout/success/page.tsx
-- [ ] T009 [US3] Add loading skeleton state (shown while isLoading is true during backend fetch) and order-not-found error state with "Order not found" heading and "Continue Shopping" link to /products (shown when fetch returns 404 or orderNumber is missing) in frontend/app/checkout/success/page.tsx
+- [X] T007 [US3] Implement dual-source order data fetching in useEffect: read orderNumber from searchParams, check sessionStorage for 'lastOrder' key (if found and matching orderNumber, parse as BackendOrderDto, remove entry, set order state — no loading), else set isLoading true and call getOrderByNumber(orderNumber) with error handling, managing order/isLoading/error states in frontend/app/checkout/success/page.tsx
+- [X] T008 [US3] Replace static confirmation content with real order details display: order number from order.orderNumber, estimated delivery from order.estimatedDelivery, items list mapping order.items to show productName, quantity, unitPrice, and subtotal per item, order totalAmount, and parsed shippingAddress fields (name, address, city, state, zipCode, country) in frontend/app/checkout/success/page.tsx
+- [X] T009 [US3] Add loading skeleton state (shown while isLoading is true during backend fetch) and order-not-found error state with "Order not found" heading and "Continue Shopping" link to /products (shown when fetch returns 404 or orderNumber is missing) in frontend/app/checkout/success/page.tsx
 
 **Checkpoint**: Confirmation page shows real data from sessionStorage (instant) or backend (with loading skeleton). Invalid order numbers handled with friendly not-found message and navigation.
 
@@ -110,8 +110,8 @@
 
 **Purpose**: End-to-end validation and cleanup across all implemented user stories.
 
-- [ ] T014 Run quickstart.md validation steps to verify complete end-to-end flow: place order with backend running (real persistence), place order with USE_API=false (mock fallback), trigger each error category (network, validation, server), refresh confirmation page (backend fetch), navigate to invalid order number (not-found state)
-- [ ] T015 [P] Code cleanup — remove dead code, verify no unused imports, confirm TypeScript strict mode compliance, and ensure consistent code style across all modified files (orders.ts, order-errors.ts, checkout-validation.ts, checkout/page.tsx, success/page.tsx)
+- [X] T014 Run quickstart.md validation steps to verify complete end-to-end flow: place order with backend running (real persistence), place order with USE_API=false (mock fallback), trigger each error category (network, validation, server), refresh confirmation page (backend fetch), navigate to invalid order number (not-found state)
+- [X] T015 [P] Code cleanup — remove dead code, verify no unused imports, confirm TypeScript strict mode compliance, and ensure consistent code style across all modified files (orders.ts, order-errors.ts, checkout-validation.ts, checkout/page.tsx, success/page.tsx)
 
 ---
 

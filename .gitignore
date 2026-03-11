@@ -70,3 +70,10 @@ bld/
 *.mdf
 *.ldf
 *.ndf
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.idea/

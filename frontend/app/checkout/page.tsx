@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart, useCartActions } from '@/lib/hooks/use-cart';
 import { getProductById } from '@/lib/api/products';
+import { createOrder, buildOrderRequest } from '@/lib/api/orders';
+import { mapOrderError } from '@/lib/utils/order-errors';
+import { validateShippingInfo, hasErrors } from '@/lib/utils/checkout-validation';
 import { formatCurrency } from '@/lib/utils/format-currency';
 import type { Product } from '@/lib/types/product';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,6 +28,8 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItemWithProduct[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [orderError, setOrderError] = useState<{ title: string; message: string } | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   
   const [shippingInfo, setShippingInfo] = useState({
     firstName: '',
@@ -78,14 +83,58 @@ export default function CheckoutPage() {
   ];
   
   const handlePlaceOrder = async () => {
+    setOrderError(null);
+
+    // Client-side validation (FR-016)
+    const errors = validateShippingInfo(shippingInfo);
+    if (hasErrors(errors)) {
+      setValidationErrors(errors);
+      setCurrentStep(1);
+      return;
+    }
+    setValidationErrors({});
+
     setIsProcessing(true);
-    
-    // Simulate order processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Clear cart and redirect
-    clearCart();
-    router.push('/checkout/success?order=' + Math.random().toString(36).substr(2, 9).toUpperCase());
+    try {
+      // Build order request from cart items (FR-001, FR-003, FR-004)
+      const orderItems = cartItems.map(item => ({
+        productId: parseInt(item.product.id),
+        quantity: item.quantity,
+        unitPrice: item.product.price,
+      }));
+
+      const request = buildOrderRequest(
+        orderItems,
+        {
+          name: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+          address: shippingInfo.address,
+          city: shippingInfo.city,
+          state: shippingInfo.state,
+          zipCode: shippingInfo.zipCode,
+          country: shippingInfo.country,
+        },
+        shippingInfo.email,
+        `${shippingInfo.firstName} ${shippingInfo.lastName}`
+      );
+
+      const order = await createOrder(request);
+
+      // Cache for instant display on confirmation page (R-002)
+      sessionStorage.setItem('lastOrder', JSON.stringify(order));
+
+      // Clear cart AFTER success (FR-005)
+      clearCart();
+
+      // Redirect with real order number (FR-006)
+      router.push(`/checkout/success?order=${order.orderNumber}`);
+    } catch (error) {
+      // Map error to user-friendly message (FR-008, FR-009)
+      const mapped = mapOrderError(error);
+      setOrderError(mapped);
+      // Cart NOT cleared on error
+    } finally {
+      setIsProcessing(false); // Re-enable button (FR-010)
+    }
   };
   
   return (
@@ -139,12 +188,14 @@ export default function CheckoutPage() {
                     label="First Name"
                     value={shippingInfo.firstName}
                     onChange={(e) => setShippingInfo({ ...shippingInfo, firstName: e.target.value })}
+                    error={validationErrors.firstName}
                     required
                   />
                   <Input
                     label="Last Name"
                     value={shippingInfo.lastName}
                     onChange={(e) => setShippingInfo({ ...shippingInfo, lastName: e.target.value })}
+                    error={validationErrors.lastName}
                     required
                   />
                   <Input
@@ -152,6 +203,7 @@ export default function CheckoutPage() {
                     type="email"
                     value={shippingInfo.email}
                     onChange={(e) => setShippingInfo({ ...shippingInfo, email: e.target.value })}
+                    error={validationErrors.email}
                     required
                   />
                   <Input
@@ -166,6 +218,7 @@ export default function CheckoutPage() {
                       label="Address"
                       value={shippingInfo.address}
                       onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
+                      error={validationErrors.address}
                       required
                     />
                   </div>
@@ -173,24 +226,28 @@ export default function CheckoutPage() {
                     label="City"
                     value={shippingInfo.city}
                     onChange={(e) => setShippingInfo({ ...shippingInfo, city: e.target.value })}
+                    error={validationErrors.city}
                     required
                   />
                   <Input
                     label="State"
                     value={shippingInfo.state}
                     onChange={(e) => setShippingInfo({ ...shippingInfo, state: e.target.value })}
+                    error={validationErrors.state}
                     required
                   />
                   <Input
                     label="ZIP Code"
                     value={shippingInfo.zipCode}
                     onChange={(e) => setShippingInfo({ ...shippingInfo, zipCode: e.target.value })}
+                    error={validationErrors.zipCode}
                     required
                   />
                   <Input
                     label="Country"
                     value={shippingInfo.country}
                     onChange={(e) => setShippingInfo({ ...shippingInfo, country: e.target.value })}
+                    error={validationErrors.country}
                     required
                   />
                 </div>
@@ -371,6 +428,13 @@ export default function CheckoutPage() {
                     {shippingMethod === 'overnight' && 'Overnight Shipping (1 business day)'}
                   </p>
                 </div>
+                
+                {orderError && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-4 mt-6">
+                    <p className="font-medium text-red-800">{orderError.title}</p>
+                    <p className="mt-1 text-sm text-red-600">{orderError.message}</p>
+                  </div>
+                )}
                 
                 <div className="flex gap-4 mt-6">
                   <Button variant="outline" onClick={() => setCurrentStep(3)} className="flex-1">

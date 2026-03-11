@@ -23,7 +23,7 @@ By the end of the implementation phase: a user can add products to cart, go thro
 ## Branching Strategy
 
 ```
-feature/spec-kit/demo-brownfield-base          ← You are here (starting point)
+feature/spec-kit/demo-brownfield-base           ← Starting point
   │
   ├── feature/spec-kit/01-init                  ← Spec Kit initialized on project
   │
