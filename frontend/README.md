@@ -1,4 +1,25 @@
-# Shop Assistant - Frontend
+# Shop Assistant
+
+A brownfield e-commerce application used as a workshop demo for **SpecKit** — a structured, agent-driven software development workflow powered by GitHub Copilot. The project consists of an ASP.NET Core 10 backend API and a Next.js 14 frontend, serving as the real-world codebase that SpecKit operates on to demonstrate how AI-assisted specification, planning, and implementation work in practice.
+
+## Branch Structure
+
+| Branch | Purpose |
+|---|---|
+| `main` | Stable baseline of the shop-assistant application |
+| `feature/spec-kit/01-init` | SpecKit initialization — scaffolds the `.specify/` directory and prompt files |
+| `feature/spec-kit/02-constitution` | Constitution generation — establishes project principles from codebase analysis |
+| `feature/spec-kit/03-specify` | Specification — produces the feature spec and API contracts |
+| `feature/spec-kit/04-clarify` | Clarification — resolves open questions and ambiguities in the spec |
+| `feature/spec-kit/05-plan` | Planning — creates the implementation plan from the spec |
+| `feature/spec-kit/06-tasks` | Task generation — breaks the plan into actionable task files |
+| `feature/spec-kit/07-analyze` | Analysis — reviews tasks for constitution compliance and risks |
+| `feature/spec-kit/08-implement` | Implementation — executes the tasks with code changes |
+| `feature/spec-kit/09-final-demo` | Final demo — complete end-to-end result of the SpecKit workflow |
+
+Each `feature/spec-kit/*` branch builds incrementally on the previous one, showing the progression through the SpecKit workflow steps. You can check out any branch to see the state of the project at that stage.
+
+## Frontend
 
 Modern Next.js 14 e-commerce frontend with React, TypeScript, and Tailwind CSS.
 
@@ -91,38 +112,25 @@ pnpm lint         # Run ESLint
 pnpm type-check   # Run TypeScript type checking
 ```
 
-## 🔗 Backend Integration (TASK-008 ✅)
-
-Frontend now integrates with the .NET 10 backend API for product data, categories, and order creation.
-
-### Configuration
-
-Set up environment variables in `.env.local`:
-
-```bash
-# Backend API URL (default: http://localhost:5250/api)
-NEXT_PUBLIC_API_URL=http://localhost:5250/api
-
-# Enable/disable API integration (set to 'false' for mocked data)
-NEXT_PUBLIC_USE_API=true
-```
-
 ### API Client Architecture
 
 The frontend uses a layered API client architecture:
 
 **Core Client** (`lib/api/client.ts`):
+
 - Generic fetch wrapper with error handling
 - Automatic JSON parsing and error responses
 - Timeout management (30s default)
 - Type-safe with TypeScript generics
 
 **Feature Clients**:
+
 - `lib/api/products.ts` - Product endpoints (list, detail, search, featured, new arrivals)
 - `lib/api/categories.ts` - Category endpoints (list, detail, products by category)
 - `lib/api/orders.ts` - Order endpoints (create, retrieve)
 
 **Fallback Mode**:
+
 - If `NEXT_PUBLIC_USE_API=false`, uses mocked data from `data/` folder
 - Graceful degradation if backend is unavailable
 - Simulates API latency for realistic user experience
@@ -238,7 +246,3 @@ Frontend can be deployed to Vercel, Netlify, or any static hosting service:
 pnpm build
 # Deploy the .next/ and out/ directories
 ```
-
----
-
-**Built with Next.js 14 and ❤️**
