@@ -1,69 +1,85 @@
-# Shop Assistant - E-Commerce Demo
+# Shop Assistant
 
-A modern, full-stack e-commerce demonstration application showcasing premium UI/UX, Next.js frontend, and .NET 10 backend with SQL Server.
+A brownfield e-commerce application used as a workshop demo for **SpecKit** — a structured, agent-driven software development workflow powered by GitHub Copilot. The project consists of an ASP.NET Core 10 backend API and a Next.js 14 frontend, serving as the real-world codebase that SpecKit operates on to demonstrate how AI-assisted specification, planning, and implementation work in practice.
+
+## Branch Structure
+
+| Branch | Purpose |
+|---|---|
+| `main` | Stable baseline of the shop-assistant application |
+| `feature/spec-kit/01-init` | SpecKit initialization — scaffolds the `.specify/` directory and prompt files |
+| `feature/spec-kit/02-constitution` | Constitution generation — establishes project principles from codebase analysis |
+| `feature/spec-kit/03-specify` | Specification — produces the feature spec and API contracts |
+| `feature/spec-kit/04-clarify` | Clarification — resolves open questions and ambiguities in the spec |
+| `feature/spec-kit/05-plan` | Planning — creates the implementation plan from the spec |
+| `feature/spec-kit/06-tasks` | Task generation — breaks the plan into actionable task files |
+| `feature/spec-kit/07-analyze` | Analysis — reviews tasks for constitution compliance and risks |
+| `feature/spec-kit/08-implement` | Implementation — executes the tasks with code changes |
+| `feature/spec-kit/09-final-demo` | Final demo — complete end-to-end result of the SpecKit workflow |
+
+Each `feature/spec-kit/*` branch builds incrementally on the previous one, showing the progression through the SpecKit workflow steps. You can check out any branch to see the state of the project at that stage.
 
 ## 📁 Project Structure
 
-\\\
+```
 shop-assistant/
 ├── frontend/          # Next.js 14 + React + TypeScript frontend
-├── backend/           # .NET 10 Web API (coming soon)
-├── specs/            # Product and feature specifications
-│   ├── prd.md        # Product Requirements Document
-│   ├── features/     # Feature Requirements Documents (FRDs)
-│   └── tasks/        # Technical implementation tasks
-├── docs/             # MkDocs documentation
-└── .github/          # Workflows, prompts, and agents
-\\\
+├── backend/           # ASP.NET Core 10 Web API + EF Core + SQL Server
+├── .specify/          # SpecKit templates, constitution, and memory
+├── .github/prompts/   # SpecKit slash command prompt files
+├── specs/             # Feature specs, contracts, plans, and tasks
+└── scripts/           # Install and setup scripts
+```
 
 ## 🚀 Quick Start
 
 ### Frontend (Next.js)
 
-\\\ash
+```bash
 cd frontend
 pnpm install
 pnpm dev
-\\\
+```
 
 Visit http://localhost:3000
 
-### Backend (.NET 10) - Coming Soon
+### Backend (.NET 10)
 
-Backend implementation follows the tasks defined in [\specs/tasks/\](specs/tasks/).
-
-\\\ash
+```bash
 cd backend
 dotnet run
-\\\
+```
 
-API will be available at http://localhost:5000
+API available at http://localhost:5250
 
 ## 📚 Documentation
 
-- **[Product Requirements (PRD)](specs/prd.md)** - Complete product specification
-- **[Feature Requirements](specs/features/)** - Detailed feature specifications (FRD-001 through FRD-009)
-- **[Technical Tasks](specs/tasks/)** - Implementation task breakdown (TASK-001 through TASK-008)
-- **[Demo Guide](frontend/DEMO_GUIDE.md)** - 5-10 minute presentation guide
-- **[Architecture Documentation](docs/)** - MkDocs documentation site
+- **[Frontend README](frontend/README.md)** - Frontend setup, API integration, and architecture
+- **[Backend README](backend/README.md)** - Backend API setup and endpoints
 
-## 🎯 Current Status
+## 📖 SpecKit Workflow
 
-✅ **Phase 1 Complete**: Frontend implementation (Next.js, React, TypeScript, Tailwind)  
-🔄 **Phase 2 In Progress**: Backend API and database integration (.NET 10 + SQL Server)
+This repo demonstrates the **GitHub SpecKit** workflow — a structured, multi-stage pipeline that uses GitHub Copilot agents to go from feature idea to shipped code. The workflow is driven by slash commands (e.g. `/speckit.constitution`, `/speckit.specify`, `/speckit.plan`) that invoke specialized agents, each producing traceable artifacts in the `.specify/` directory.
 
-### What's Working
-- Full frontend with product browsing, filtering, search
-- Shopping cart (localStorage-based)
-- Complete checkout flow
-- Responsive design (mobile, tablet, desktop)
-- Smooth animations and interactions
+### Workflow Stages
 
-### What's Next
-- Backend API implementation (see [task breakdown](specs/tasks/))
-- Database setup with SQL Server
-- Frontend-backend integration
-- API documentation with Swagger
+1. **Init**: Scaffold the `.specify/` directory, templates, and prompt files
+2. **Constitution**: Deep-analyze the codebase to generate project principles and governance rules
+3. **Specify**: Produce a feature specification with API contracts and research decisions
+4. **Clarify**: Resolve open questions and ambiguities in the spec
+5. **Plan**: Create a detailed implementation plan from the spec, checked against the constitution
+6. **Tasks**: Break the plan into ordered, atomic task files
+7. **Analyze**: Review tasks for compliance, risks, and dependencies
+8. **Implement**: Execute the tasks with code changes, one batch at a time
+
+### Key Artifacts
+
+| Directory | Contents |
+|---|---|
+| `.specify/templates/` | Constitution, plan, spec, tasks, and checklist templates |
+| `.specify/memory/` | `constitution.md` — the project's governing principles |
+| `.github/prompts/` | `speckit.*.prompt.md` slash command prompt files |
+| `specs/<feature>/` | Per-feature specs, contracts, research, plans, and tasks |
 
 ## 🛠️ Tech Stack
 
@@ -74,36 +90,13 @@ API will be available at http://localhost:5000
 - **Animations**: Framer Motion
 - **State**: React Context + localStorage
 
-### Backend (Coming Soon)
-- **Framework**: .NET 10 Web API
+### Backend
+- **Framework**: ASP.NET Core 10 Web API
+- **Language**: C# 13
 - **Database**: SQL Server (LocalDB/Developer/Docker)
 - **ORM**: Entity Framework Core
 - **API Docs**: Swagger/OpenAPI
 
-## 📖 Development Workflow
+## 📝 Note on spec2cloud
 
-This project uses **spec2cloud** AI-powered development workflow with specialized GitHub Copilot agents.
-
-### Specialized Agents
-- \@pm\ - Product Manager (creates PRDs, FRDs)
-- \@dev\ - Developer (implements features)
-- \@architect\ - Architect (creates ADRs)
-- \@planner\ - Planner (breaks down tasks)
-
-### Workflow Prompts
-- \/prd\ - Generate Product Requirements Document
-- \/frd\ - Generate Feature Requirements Documents
-- \/plan\ - Break features into technical tasks
-- \/delegate\ - Delegate task to developer
-
-See [\.github/prompts/\](.github/prompts/) for all available workflows.
-
-## 🎨 About spec2cloud
-
-**Spec2Cloud** is an AI-powered development workflow that transforms high-level product ideas into production-ready applications deployed on Azure—using specialized GitHub Copilot agents working together.
-
-For more details, see [README.spec2cloud.md](README.spec2cloud.md) or visit the [spec2cloud repository](https://github.com/EmeaAppGbb/spec2cloud).
-
----
-
-**From idea to production, powered by AI agents.** 🚀
+This project was originally scaffolded using [spec2cloud](https://github.com/EmeaAppGbb/spec2cloud), an AI-powered workflow with specialized Copilot agents (`@pm`, `@dev`, `@architect`, `@planner`). The `specs/` directory and agent definitions in `.github/` come from that earlier phase. The current focus of this repo is demonstrating the **SpecKit** workflow.

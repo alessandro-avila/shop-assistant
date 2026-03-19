@@ -1,25 +1,4 @@
-# Shop Assistant
-
-A brownfield e-commerce application used as a workshop demo for **SpecKit** — a structured, agent-driven software development workflow powered by GitHub Copilot. The project consists of an ASP.NET Core 10 backend API and a Next.js 14 frontend, serving as the real-world codebase that SpecKit operates on to demonstrate how AI-assisted specification, planning, and implementation work in practice.
-
-## Branch Structure
-
-| Branch | Purpose |
-|---|---|
-| `main` | Stable baseline of the shop-assistant application |
-| `feature/spec-kit/01-init` | SpecKit initialization — scaffolds the `.specify/` directory and prompt files |
-| `feature/spec-kit/02-constitution` | Constitution generation — establishes project principles from codebase analysis |
-| `feature/spec-kit/03-specify` | Specification — produces the feature spec and API contracts |
-| `feature/spec-kit/04-clarify` | Clarification — resolves open questions and ambiguities in the spec |
-| `feature/spec-kit/05-plan` | Planning — creates the implementation plan from the spec |
-| `feature/spec-kit/06-tasks` | Task generation — breaks the plan into actionable task files |
-| `feature/spec-kit/07-analyze` | Analysis — reviews tasks for constitution compliance and risks |
-| `feature/spec-kit/08-implement` | Implementation — executes the tasks with code changes |
-| `feature/spec-kit/09-final-demo` | Final demo — complete end-to-end result of the SpecKit workflow |
-
-Each `feature/spec-kit/*` branch builds incrementally on the previous one, showing the progression through the SpecKit workflow steps. You can check out any branch to see the state of the project at that stage.
-
-## Frontend
+# Shop Assistant - Frontend
 
 Modern Next.js 14 e-commerce frontend with React, TypeScript, and Tailwind CSS.
 
