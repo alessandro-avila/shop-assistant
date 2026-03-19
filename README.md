@@ -6,7 +6,7 @@ A brownfield e-commerce application used as a workshop demo for **SpecKit** — 
 
 | Branch | Purpose |
 |---|---|
-| `main` | Stable baseline of the shop-assistant application |
+| `feature/spec-kit/demo-brownfield-base` | Stable baseline of the shop-assistant application |
 | `feature/spec-kit/01-init` | SpecKit initialization — scaffolds the `.specify/` directory and prompt files |
 | `feature/spec-kit/02-constitution` | Constitution generation — establishes project principles from codebase analysis |
 | `feature/spec-kit/03-specify` | Specification — produces the feature spec and API contracts |
