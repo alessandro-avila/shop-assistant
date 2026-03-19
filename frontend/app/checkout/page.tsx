@@ -8,7 +8,7 @@ import { useCart, useCartActions } from '@/lib/hooks/use-cart';
 import { getProductById } from '@/lib/api/products';
 import { createOrder, buildOrderRequest } from '@/lib/api/orders';
 import { mapOrderError } from '@/lib/utils/order-errors';
-import { validateShippingInfo, hasErrors } from '@/lib/utils/checkout-validation';
+import { validateShippingInfo, validatePaymentInfo, hasErrors } from '@/lib/utils/checkout-validation';
 import { formatCurrency } from '@/lib/utils/format-currency';
 import type { Product } from '@/lib/types/product';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -259,7 +259,13 @@ export default function CheckoutPage() {
                   variant="primary"
                   size="lg"
                   className="mt-6 w-full"
-                  onClick={() => setCurrentStep(2)}
+                  onClick={() => {
+                    const errors = validateShippingInfo(shippingInfo);
+                    setValidationErrors(errors);
+                    if (!hasErrors(errors)) {
+                      setCurrentStep(2);
+                    }
+                  }}
                 >
                   Continue to Delivery
                 </Button>
@@ -356,12 +362,14 @@ export default function CheckoutPage() {
                     placeholder="1234 5678 9012 3456"
                     value={paymentInfo.cardNumber}
                     onChange={(e) => setPaymentInfo({ ...paymentInfo, cardNumber: e.target.value })}
+                    error={validationErrors.cardNumber}
                     required
                   />
                   <Input
                     label="Cardholder Name"
                     value={paymentInfo.cardName}
                     onChange={(e) => setPaymentInfo({ ...paymentInfo, cardName: e.target.value })}
+                    error={validationErrors.cardName}
                     required
                   />
                   <div className="grid grid-cols-2 gap-4">
@@ -370,6 +378,7 @@ export default function CheckoutPage() {
                       placeholder="MM/YY"
                       value={paymentInfo.expiryDate}
                       onChange={(e) => setPaymentInfo({ ...paymentInfo, expiryDate: e.target.value })}
+                      error={validationErrors.expiryDate}
                       required
                     />
                     <Input
@@ -377,6 +386,7 @@ export default function CheckoutPage() {
                       placeholder="123"
                       value={paymentInfo.cvv}
                       onChange={(e) => setPaymentInfo({ ...paymentInfo, cvv: e.target.value })}
+                      error={validationErrors.cvv}
                       required
                     />
                   </div>
@@ -385,7 +395,13 @@ export default function CheckoutPage() {
                   <Button variant="outline" onClick={() => setCurrentStep(2)} className="flex-1">
                     Back
                   </Button>
-                  <Button variant="primary" onClick={() => setCurrentStep(4)} className="flex-1">
+                  <Button variant="primary" onClick={() => {
+                    const errors = validatePaymentInfo(paymentInfo);
+                    setValidationErrors(errors);
+                    if (!hasErrors(errors)) {
+                      setCurrentStep(4);
+                    }
+                  }} className="flex-1">
                     Review Order
                   </Button>
                 </div>

@@ -44,6 +44,44 @@ export function validateShippingInfo(info: {
 }
 
 /**
+ * Validate payment information fields.
+ *
+ * @param info - Payment form values
+ * @returns Record of field name → error message (empty if valid)
+ */
+export function validatePaymentInfo(info: {
+  cardNumber: string;
+  cardName: string;
+  expiryDate: string;
+  cvv: string;
+}): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const digits = info.cardNumber.replace(/\s/g, '');
+  if (!digits) {
+    errors.cardNumber = 'Card number is required';
+  } else if (!/^\d{13,19}$/.test(digits)) {
+    errors.cardNumber = 'Please enter a valid card number';
+  }
+
+  if (!info.cardName.trim()) errors.cardName = 'Cardholder name is required';
+
+  if (!info.expiryDate.trim()) {
+    errors.expiryDate = 'Expiry date is required';
+  } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(info.expiryDate.trim())) {
+    errors.expiryDate = 'Use MM/YY format';
+  }
+
+  if (!info.cvv.trim()) {
+    errors.cvv = 'CVV is required';
+  } else if (!/^\d{3,4}$/.test(info.cvv.trim())) {
+    errors.cvv = 'CVV must be 3 or 4 digits';
+  }
+
+  return errors;
+}
+
+/**
  * Check whether a validation errors record contains any errors.
  *
  * @param errors - Validation errors record
