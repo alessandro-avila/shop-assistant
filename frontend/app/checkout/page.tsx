@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderError, setOrderError] = useState<{ title: string; message: string } | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const orderPlacedRef = useRef(false);
   
   const [shippingInfo, setShippingInfo] = useState({
     firstName: '',
@@ -63,9 +64,9 @@ export default function CheckoutPage() {
       setCartItems(itemsWithProducts.filter((item): item is CartItemWithProduct => item !== null));
     }
     
-    if (items.length === 0) {
+    if (items.length === 0 && !orderPlacedRef.current) {
       router.push('/cart');
-    } else {
+    } else if (items.length > 0) {
       loadCartItems();
     }
   }, [items, router]);
@@ -121,6 +122,9 @@ export default function CheckoutPage() {
 
       // Cache for instant display on confirmation page (R-002)
       sessionStorage.setItem('lastOrder', JSON.stringify(order));
+
+      // Mark order as placed to prevent empty-cart redirect race condition
+      orderPlacedRef.current = true;
 
       // Clear cart AFTER success (FR-005)
       clearCart();
